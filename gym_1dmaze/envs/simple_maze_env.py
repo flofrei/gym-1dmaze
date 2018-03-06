@@ -13,7 +13,7 @@ from gym.envs.registration import register
 import math
 
 
-class 1DMaze(gym.Env):
+class SimpleMaze(gym.Env):
 
     """
     # Set this in SOME subclasses
@@ -29,15 +29,10 @@ class 1DMaze(gym.Env):
     """
 
     metadata = {'render.modes': ['ansi']}
-    reward_range = (0,2)
-    
+    #reward_range = (0,2)
     action_list = ['left','right','leftskip','rightskip']
 
-
-
     def __init__(self,wsize=None,expansion_flag=None):
-        #super(SimpleWorld, self).__init__()
-        #self.action_space = spaces.Discrete(2)
 
         if expansion_flag==True:
             self.action_space = spaces.Discrete(4);
@@ -49,19 +44,21 @@ class 1DMaze(gym.Env):
             raise NotImplementedError
 
         self.world_size=wsize;
+        #print(self.world_size)
+        self.observation_space = spaces.Discrete(self.world_size);
+        print(self.observation_space.shape);
 
-        if len(self.world_size) > 0:
-            self.observation_space = spaces.Discrete(self.world_size);
-        else:
-            raise NotImplementedError
-        
+        #if self.world_size > 0:
+        #    self.observation_space = spaces.Discrete(self.world_size);
+        #else:
+        #    raise NotImplementedError
         
         self.agent_position=-1;
         self.goal_position=-1;
 
-        self.world=self.create_world();
-        self.set_startposition(3);
-        self.set_goalposition(14);
+        #self.world=self.create_world();
+        #self.set_startposition(3);
+        #self.set_goalposition(14);
 
     def create_world(self):
         listholder = [];
@@ -85,7 +82,7 @@ class 1DMaze(gym.Env):
         self.world=self.create_world();
         self.set_startposition(3);
         self.set_goalposition(14);
-        warray = get_features();
+        warray = self.get_features();
         return warray;
 
     def new_print(self):
@@ -94,40 +91,53 @@ class 1DMaze(gym.Env):
         print(newstring);
 
     def get_features(self):
-        new_input = np.zeros((1,self.world_size)); 
+        new_input = np.zeros(self.world_size); 
         for r in range(self.world_size):
-            new_input[0,r] = ord(self.world[r]);
+            new_input[r] = ord(self.world[r]);
 
         return new_input 
 
-    def _render(self, mode='ansi'):
+    def _render(self, mode='ansi',close=False):
         if mode == 'ansi':
             newstring = ''.join(self.world);
+            print(newstring);
             return newstring;
         else:
-            super(1DMaze, self).render(mode=mode) # just raise an exception
+            super(SimpleMaze, self).render(mode=mode) # just raise an exception
 
+    def _seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
 
+    def _close(self):
+        del action_space;
+
+    """Run one timestep of the environment's dynamics. When end of
+    episode is reached, you are responsible for calling `reset()`
+    to reset this environment's state.
+
+    Accepts an action and returns a tuple (observation, reward, done, info).
+
+    Args:
+        action (object): an action provided by the environment
+
+    Returns:
+        observation (object): agent's observation of the current environment
+        reward (float) : amount of reward returned after previous action
+        done (boolean): whether the episode has ended, in which case further step() calls will return undefined results
+        info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
+    """
     def _step(self, action_value):
         #Step function in the 1D World
+        #print("------------step----------------")
 
-            """Run one timestep of the environment's dynamics. When end of
-        episode is reached, you are responsible for calling `reset()`
-        to reset this environment's state.
+        if(action_value==0 or action_value==1):
+            P=1;
+            #print("everything is alrigth")
+        else:
+            print("Something terribly went wrong")
 
-        Accepts an action and returns a tuple (observation, reward, done, info).
-
-        Args:
-            action (object): an action provided by the environment
-
-        Returns:
-            observation (object): agent's observation of the current environment
-            reward (float) : amount of reward returned after previous action
-            done (boolean): whether the episode has ended, in which case further step() calls will return undefined results
-            info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
-        """
-        action = action_list[action_value];
-
+        action = self.action_list[action_value];
         ## First action value
         if action == 'left':
             ## Going out of the world case
@@ -217,13 +227,6 @@ class 1DMaze(gym.Env):
                     self.agent_position=self.agent_position+2;
                     return self.get_features(), r,end_of_eps,None;
 
-    def _seed(self, seed=None):
-        self.np_random, seed = seeding.np_random(seed)
-        return [seed]
-
-    def _close(self):
-        del action_space;
-
 """
 def test_suite():
     size = 16;
@@ -273,14 +276,14 @@ def test_suite():
         env.new_print(); print(reward)
 """
 
-class 1DMaze1x16s(1DMaze):
+class SimpleMaze1x16s(SimpleMaze):
 
     def __init__(self):
-        super(1DMaze1x16, self).__init__(wsize=16,expansion_flag=False)
+        super(SimpleMaze1x16s, self).__init__(wsize=16,expansion_flag=False)
 
-class 1DMaze1x16c(1DMaze):
+class SimpleMaze1x16c(SimpleMaze):
 
     def __init__(self):
-        super(1DMaze1x16, self).__init__(wsize=16,expansion_flag=True)
+        super(SimpleMaze1x16c, self).__init__(wsize=16,expansion_flag=True)
 
     

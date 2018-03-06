@@ -1,1 +1,1 @@
-from gym_1dmaze.envs.1dmaze_env import 1DMaze
+from gym_1dmaze.envs.simple_maze_env import *
