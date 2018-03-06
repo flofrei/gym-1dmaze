@@ -6,33 +6,68 @@ ASCII based features and impl.
 
 import numpy as np
 
-from gym import core, spaces
+import gym
+from gym import error, spaces, utils, core
+from gym.utils import seeding
 from gym.envs.registration import register
+import math
 
-class 1DMaze(object):
-    def __init__(self,wsize=16,expansion_flag=False):
-        super(SimpleWorld, self).__init__()
+
+class 1DMaze(gym.Env):
+
+    """
+    # Set this in SOME subclasses
+    metadata = {'render.modes': []}
+    reward_range = (-np.inf, np.inf)
+    spec = None
+
+
+    # Set these in ALL subclasses
+    action_space = None
+    observation_space = None
+
+    """
+
+    metadata = {'render.modes': ['ansi']}
+    reward_range = (0,2)
+    
+    action_list = ['left','right','leftskip','rightskip']
+
+
+
+    def __init__(self,wsize=None,expansion_flag=None):
+        #super(SimpleWorld, self).__init__()
+        #self.action_space = spaces.Discrete(2)
 
         if expansion_flag==True:
-            self.action_space = ['left', 'right', 'leftskip', 'rightskip'];
+            self.action_space = spaces.Discrete(4);
+            self.n_actions=4;
+        elif expansion_flag==False:
+            self.action_space = spaces.Discrete(2);
+            self.n_actions=2;
         else:
-            self.action_space = ['left', 'right'];
+            raise NotImplementedError
+
+        self.world_size=wsize;
+
+        if len(self.world_size) > 0:
+            self.observation_space = spaces.Discrete(self.world_size);
+        else:
+            raise NotImplementedError
         
-        self.n_actions = len(self.action_space);
-        #self.title('1D_world')
+        
         self.agent_position=-1;
         self.goal_position=-1;
-        self.world_size=wsize;
+
         self.world=self.create_world();
         self.set_startposition(3);
-        self.set_goalposition(15);
+        self.set_goalposition(14);
 
     def create_world(self):
         listholder = [];
         for k in range(self.world_size):
             listholder+=['_'];
             
-        #env_list = ['_']*size;
         return listholder;
 
     def swap(self,pos1,pos2):
@@ -46,8 +81,12 @@ class 1DMaze(object):
         self.world[position] = 'T';
         self.goal_position=position;
 
-    def reset(self):
+    def _reset(self):
         self.world=self.create_world();
+        self.set_startposition(3);
+        self.set_goalposition(14);
+        warray = get_features();
+        return warray;
 
     def new_print(self):
         #size = len(world);
@@ -61,84 +100,131 @@ class 1DMaze(object):
 
         return new_input 
 
+    def _render(self, mode='ansi'):
+        if mode == 'ansi':
+            newstring = ''.join(self.world);
+            return newstring;
+        else:
+            super(1DMaze, self).render(mode=mode) # just raise an exception
 
-    def step(self,action):
+
+    def _step(self, action_value):
         #Step function in the 1D World
+
+            """Run one timestep of the environment's dynamics. When end of
+        episode is reached, you are responsible for calling `reset()`
+        to reset this environment's state.
+
+        Accepts an action and returns a tuple (observation, reward, done, info).
+
+        Args:
+            action (object): an action provided by the environment
+
+        Returns:
+            observation (object): agent's observation of the current environment
+            reward (float) : amount of reward returned after previous action
+            done (boolean): whether the episode has ended, in which case further step() calls will return undefined results
+            info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
+        """
+        action = action_list[action_value];
 
         ## First action value
         if action == 'left':
             ## Going out of the world case
             if self.agent_position==0:
                 r = 0; 
-                return self.get_features(), r;
+                end_of_eps = False;
+                return self.get_features(),r,end_of_eps,None;
             ## Moving internally in the world
             else:
                 ## Moving to goal position 
                 if self.agent_position==self.goal_position+1: 
                     r = 1;
-                    return 'terminal', r;
+                    tstate = self._reset();
+                    end_of_eps = True;
+                    return tstate, r, end_of_eps, None;
                 ## only moving around  
                 else:
                     r = 0;
+                    end_of_eps = False;
                     self.swap(self.agent_position,self.agent_position-1);
                     self.agent_position=self.agent_position-1;
-                    return self.get_features(), r;
+                    return self.get_features(),r,end_of_eps,None;
         ## Second action value        
         elif action == 'right':
             ## Going out of the world case
             if self.agent_position==self.world_size-1:
                 r = 0;
-                return self.get_features(),r;
+                end_of_eps = False;
+                return self.get_features(),r,end_of_eps,None;
             ## Moving internally in the World
             else:
                 ## Moving to goal position
                 if self.agent_position==self.goal_position-1:
                     r = 1;
-                    return 'terminal', r;
+                    tstate = self._reset();
+                    end_of_eps = True;
+                    return tstate, r, end_of_eps, None;
                 ## only moving around
                 else:
                     r = 0;
+                    end_of_eps = False;
                     self.swap(self.agent_position,self.agent_position+1);
                     self.agent_position=self.agent_position+1;
-                    return self.get_features(), r;
+                    return self.get_features(), r,end_of_eps,None;
         ## Third action value  
         elif action == 'leftskip':
             ## Goind out of the world
             if self.agent_position==1 or self.agent_position==0:
                 r = 0;
-                return self.get_features(), r;
+                end_of_eps = False;
+                return self.get_features(), r,end_of_eps,None;
             ## Moving internally in the world
             else:
                 ## Moving to goal position
                 if self.agent_position == self.goal_position+2:
                     r = 1;
-                    return 'terminal', r;
+                    tstate = self._reset();
+                    end_of_eps = True;
+                    return tstate, r,end_of_eps,None;
                 ## only moving around
                 else:
                     r = 0;
+                    end_of_eps = False;
                     self.swap(self.agent_position,self.agent_position-2);
                     self.agent_position=self.agent_position-2;
-                    return self.get_features(), r;
+                    return self.get_features(), r,end_of_eps,None;
         ## Fourth action value 
         elif action == 'rightskip':
             ## Goind out of the world
             if self.agent_position==self.world_size-1 or self.agent_position==self.world_size-2:
                 r = 0;
-                return self.get_features(), r;
+                end_of_eps = False;
+                return self.get_features(), r,end_of_eps,None;
             ## Moving internally in the world
             else:
                 ## Moving to goal position
                 if self.agent_position == self.goal_position-2:
                     r = 1;
-                    return 'terminal', r;
+                    tstate = self._reset();
+                    end_of_eps = True;
+                    return tstate, r,end_of_eps,None;
                 ## only moving around
                 else:
                     r = 0;
+                    end_of_eps = False;
                     self.swap(self.agent_position,self.agent_position+2);
                     self.agent_position=self.agent_position+2;
-                    return self.get_features(), r;
+                    return self.get_features(), r,end_of_eps,None;
 
+    def _seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
 
+    def _close(self):
+        del action_space;
+
+"""
 def test_suite():
     size = 16;
     env = SimpleWorld(size);
@@ -185,17 +271,16 @@ def test_suite():
         action = 'leftskip'; 
         newstate,reward = env.step(action);
         env.new_print(); print(reward)
+"""
 
+class 1DMaze1x16s(1DMaze):
 
-#register(
-#    id='1Dsimpleworld-v0',
-#    entry_point='world.simpleworld:SimpleWorld',
-#   timestep_limit=20000,
-#   reward_threshold=1,
-#)
-#if __name__ == "__main__":
-    #size=32;
-#    env = SimpleWorld();
-    #uncomment for analysis
-    #test_suite();
+    def __init__(self):
+        super(1DMaze1x16, self).__init__(wsize=16,expansion_flag=False)
+
+class 1DMaze1x16c(1DMaze):
+
+    def __init__(self):
+        super(1DMaze1x16, self).__init__(wsize=16,expansion_flag=True)
+
     

@@ -1,12 +1,16 @@
-import logging
+#import logging
 from gym.envs.registration import register
 
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 
 register(
-    id='1DMaze-v0',
-    entry_point='gym_1dmaze.envs:1DMaze',
-    timestep_limit=1000,
-    reward_threshold=1.0,
-    nondeterministic = True,
+    id='1DMaze_s-v0',
+    entry_point='gym_1dmaze.envs:1DMaze1x16s',
+    timestep_limit=2000,
+)
+
+register(
+    id='1DMaze_c-v0',
+    entry_point='gym_1dmaze.envs:1DMaze1x16c',
+    timestep_limit=2000,
 )
