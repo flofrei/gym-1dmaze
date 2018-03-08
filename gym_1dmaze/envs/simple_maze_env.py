@@ -49,40 +49,45 @@ class SimpleMaze(gym.Env):
 
         if self.world_mode == 'mode0':
             self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
+            self.agent_position=-1;
+            self.goal_position=-1;
         elif self.world_mode == 'mode1':
             self.observation_space = spaces.Box(low=0,high=3,shape=(self.world_size,),dtype=np.int8)
+            self.agent_position=-1;
+            self.goal_position=-1;
+            self.treasure_position=-1;
         else:
             print("Something has terribly gone wrong!");
 
         self.world = None;
-        self.agent_position=-1;
-        self.goal_position=-1;
         self.world_as_string = None;
 
     def to_liststring(self):
         listholder = [];
         for k in range(self.world_size):
             listholder+=['_'];
-        listholder[self.agent_position] = 'a';
-        listholder[self.goal_position] = 'T';   
-        return listholder;
 
+        if self.world_mode == 'mode0':
+            listholder[self.agent_position] = 'a';
+            listholder[self.goal_position] = 'T';
+        elif self.world_mode == 'mode1':
+            listholder[self.agent_position] = 'a';
+            listholder[self.goal_position] = 'T';
+            listholder[self.treasure_position] = 't';
+        
+        return listholder;
 
     def swap(self,pos1,pos2):
             self.world[pos1],self.world[pos2] = self.world[pos2],self.world[pos1];
 
-    def set_startposition(self,position):
-        self.world[position] = 1;
-        self.agent_position=position;
-
-    def set_goalposition(self,position):
-        self.world[position] = 2;
-        self.goal_position=position;
-
     def _reset(self):
         inital = np.zeros(self.world_size);
+
+        #if self.world_mode == 'mode0':
+        
         goalpos = self.world_size - 2;
         startpos = 3;
+        #treasurepos = 0;
         
         self.world = inital;
         self.world[startpos]=1;
@@ -103,12 +108,12 @@ class SimpleMaze(gym.Env):
         lstholder = self.to_liststring();
         outfile.write(''.join(lstholder));
         outfile.write("\n");
-        #outfile.write("\n".join(["".join(row) for row in out])+"\n")
 
         # No need to return anything for human
         if mode != 'human':
             return outfile
-
+        
+        #TODO ansi mode is not working yet since StringIO is not used correctly
 
     def _seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -244,54 +249,6 @@ class SimpleMaze(gym.Env):
                     self.agent_position=self.agent_position+2;
                     return self.get_features(), r,end_of_eps,lst;
 
-"""
-def test_suite():
-    size = 16;
-    env = SimpleWorld(size);
-    print("First tests with moving right");
-    env.set_startposition(3);
-    env.set_goalposition(15);
-    #print(new_world);
-    env.new_print(); 
-    print(env.get_features());
-    
-    for k in range(12):
-        action = 'right'; 
-        newstate,reward = env.step(action);
-        env.new_print(); print(reward)
-        #print("Total score for {} is {}".format(newstate, reward))
-
-    env.reset();
-    env.set_startposition(3);
-    env.set_goalposition(15);
-
-    for k in range(6):
-        action = 'rightskip'; 
-        newstate,reward = env.step(action);
-        env.new_print(); print(reward)
-
-    print("Second tests with moving left");
-    env.reset();
-    env.set_startposition(15);
-    env.set_goalposition(3);
-    #print(new_world);
-    env.new_print(); 
-    print(env.get_features());
-    
-    for k in range(12):
-        action = 'left';
-        newstate,reward = env.step(action);
-        env.new_print(); print(reward)
-        #print("Total score for {} is {}".format(newstate, reward))
-
-    env.reset();
-    env.set_startposition(15);
-    env.set_goalposition(3);
-    for k in range(6):
-        action = 'leftskip'; 
-        newstate,reward = env.step(action);
-        env.new_print(); print(reward)
-"""
 
 class SimpleMaze1x16sasm0(SimpleMaze):
 
