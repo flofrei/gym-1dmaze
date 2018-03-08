@@ -11,6 +11,7 @@ from gym import error, spaces, utils, core
 from gym.utils import seeding
 from gym.envs.registration import register
 import math
+import sys
 
 
 class SimpleMaze(gym.Env):
@@ -28,8 +29,7 @@ class SimpleMaze(gym.Env):
 
     """
 
-    metadata = {'render.modes': ["human",'ansi'] }
-    #reward_range = (0,2)
+    metadata = {'render.modes': ["human", 'ansi']}
     action_list = ['left','right','leftskip','rightskip']
 
     def __init__(self,wsize=None,expansion_flag=None):
@@ -41,39 +41,26 @@ class SimpleMaze(gym.Env):
             self.action_space = spaces.Discrete(2);
             self.n_actions=2;
         else:
-            raise NotImplementedError
+            print("Something has terribly gone wrong!");
 
         self.world_size=wsize;
-        #low = np.zeros
-        #print(self.world_size)
-        #self.observation_space = spaces.Discrete(self.world_size);
+
+
         self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
 
         self.world = None;
-        self.viewer = None;
-        #print(self.observation_space.shape);
-        #self.action_space = spaces.Box(low=-10, high=10, shape=(1,))
-
-        #if self.world_size > 0:
-        #    self.observation_space = spaces.Discrete(self.world_size);
-        #else:
-        #    raise NotImplementedError
-        
         self.agent_position=-1;
         self.goal_position=-1;
+        self.world_as_string = None;
 
-        #self.world=self.create_world();
-        #self.set_startposition(3);
-        #self.set_goalposition(14);
+    def to_liststring(self):
+        listholder = [];
+        for k in range(self.world_size):
+            listholder+=['_'];
+        listholder[self.agent_position] = 'a';
+        listholder[self.goal_position] = 'T';   
+        return listholder;
 
-    def create_world(self):
-        #listholder = [];
-        #for k in range(self.world_size):
-        #    listholder+=['_'];
-        #   
-        #return listholder;
-        inital = np.zeros(self.world_size);
-        self.world = inital;
 
     def swap(self,pos1,pos2):
             self.world[pos1],self.world[pos2] = self.world[pos2],self.world[pos1];
@@ -87,37 +74,31 @@ class SimpleMaze(gym.Env):
         self.goal_position=position;
 
     def _reset(self):
-        #self.world=self.create_world();
         inital = np.zeros(self.world_size);
         self.world = inital;
         self.world[3]=1;
         self.world[14]=2;
         self.agent_position=3;
         self.goal_position=14;
-        #self.set_startposition(3);
-        #self.set_goalposition(14);
-        #warray = self.get_features();
         return self.world;
 
-    def new_print(self):
-        #size = len(world);
-        #newstring = ''.join(self.world);
-        print(self.world);
 
     def get_features(self):
-        #new_input = np.zeros(self.world_size); 
-        #for r in range(self.world_size):
-        #    new_input[r] = ord(self.world[r]);
-
         return self.world
 
-    def _render(self, mode='ansi',close=False):
-        if mode == 'ansi':
-            newstring = str(self.world);
-            #print(newstring);
-            return newstring;
-        else:
-            super(SimpleMaze, self).render(mode=mode) # just raise an exception
+
+    def _render(self, mode='human',close=False):
+        outfile = StringIO() if mode == 'ansi' else sys.stdout
+    
+        lstholder = self.to_liststring();
+        outfile.write(''.join(lstholder));
+        outfile.write("\n");
+        #outfile.write("\n".join(["".join(row) for row in out])+"\n")
+
+        # No need to return anything for human
+        if mode != 'human':
+            return outfile
+
 
     def _seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
