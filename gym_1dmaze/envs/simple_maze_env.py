@@ -32,6 +32,7 @@ class SimpleMaze(gym.Env):
 
     metadata = {'render.modes': ["human", 'ansi']}
     action_list = ['left','right','leftskip','rightskip']
+    
 
     def __init__(self,wsize=None,extended_action_set=None,wmode=None):
 
@@ -46,6 +47,13 @@ class SimpleMaze(gym.Env):
 
         self.world_size=wsize;
         self.world_mode = wmode;
+        self.number_of_episodes=0;
+        
+        self.positionset1 = [3 , self.world_size -2];
+        self.positionset2 = [self.world_size -2 , 3 ];
+        self.positionset3 = [ int(self.world_size/2), self.world_size-1];
+        self.positionset4 = [ self.world_size-1 , int(self.world_size/2)];
+        
 
         if self.world_mode == 'mode0':
             self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
@@ -83,11 +91,18 @@ class SimpleMaze(gym.Env):
     def _reset(self):
         inital = np.zeros(self.world_size);
 
-        #if self.world_mode == 'mode0':
-        
-        goalpos = self.world_size - 2;
-        startpos = 3;
-        #treasurepos = 0;
+        if self.world_mode == 'mode0':
+            if self.number_of_episodes < 250:
+                startpos, goalpos = self.positionset1;
+            elif self.number_of_episodes < 500:
+                startpos, goalpos = self.positionset2;
+            elif self.number_of_episodes < 750:
+                startpos, goalpos = self.positionset3;
+            else:
+                startpos, goalpos = self.positionset4;
+        else:
+            print("Not implemented YET");
+            #TODO        
         
         self.world = inital;
         self.world[startpos]=1;
@@ -95,6 +110,8 @@ class SimpleMaze(gym.Env):
 
         self.agent_position=startpos;
         self.goal_position=goalpos;
+
+        self.number_of_episodes +=1 ;
         return self.world;
 
 
