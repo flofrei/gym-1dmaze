@@ -46,8 +46,12 @@ class SimpleMaze(gym.Env):
 
         self.world_size=wsize;
 
-
-        self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
+        if world_mode == 'mode0':
+            self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
+        elif world_mode == 'mode1':
+            self.observation_space = spaces.Box(low=0,high=3,shape=(self.world_size,),dtype=np.int8)
+        else:
+            print("Something has terribly gone wrong!");
 
         self.world = None;
         self.agent_position=-1;
@@ -288,23 +292,23 @@ def test_suite():
         env.new_print(); print(reward)
 """
 
-class SimpleMaze1x16sas(SimpleMaze):
+class SimpleMaze1x16sasm0(SimpleMaze):
 
     def __init__(self):
-        super(SimpleMaze1x16sas, self).__init__(wsize=16,extended_action_set=False)
+        super(SimpleMaze1x16sasm0, self).__init__(wsize=16,extended_action_set=False,world_mode='mode0')
 
-class SimpleMaze1x16eas(SimpleMaze):
-
-    def __init__(self):
-        super(SimpleMaze1x16eas, self).__init__(wsize=16,extended_action_set=True)
-
-class SimpleMaze1x32sas(SimpleMaze):
+class SimpleMaze1x16easm0(SimpleMaze):
 
     def __init__(self):
-        super(SimpleMaze1x32sas, self).__init__(wsize=32,extended_action_set=False)
+        super(SimpleMaze1x16easm0, self).__init__(wsize=16,extended_action_set=True,world_mode='mode0')
 
-class SimpleMaze1x32eas(SimpleMaze):
+class SimpleMaze1x32sasm0(SimpleMaze):
 
     def __init__(self):
-        super(SimpleMaze1x32eas, self).__init__(wsize=32,extended_action_set=True)
+        super(SimpleMaze1x32sasm0, self).__init__(wsize=32,extended_action_set=False,world_mode='mode0')
+
+class SimpleMaze1x32easm0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x32easm0, self).__init__(wsize=32,extended_action_set=True,world_mode='mode0')
     
