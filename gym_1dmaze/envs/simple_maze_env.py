@@ -33,7 +33,7 @@ class SimpleMaze(gym.Env):
     metadata = {'render.modes': ["human", 'ansi']}
     action_list = ['left','right','leftskip','rightskip']
 
-    def __init__(self,wsize=None,extended_action_set=None,world_mode=None):
+    def __init__(self,wsize=None,extended_action_set=None,wmode=None):
 
         if extended_action_set==True:
             self.action_space = spaces.Discrete(4);
@@ -45,10 +45,11 @@ class SimpleMaze(gym.Env):
             print("Something has terribly gone wrong!");
 
         self.world_size=wsize;
+        self.world_mode = wmode;
 
-        if world_mode == 'mode0':
+        if self.world_mode == 'mode0':
             self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
-        elif world_mode == 'mode1':
+        elif self.world_mode == 'mode1':
             self.observation_space = spaces.Box(low=0,high=3,shape=(self.world_size,),dtype=np.int8)
         else:
             print("Something has terribly gone wrong!");
@@ -295,20 +296,20 @@ def test_suite():
 class SimpleMaze1x16sasm0(SimpleMaze):
 
     def __init__(self):
-        super(SimpleMaze1x16sasm0, self).__init__(wsize=16,extended_action_set=False,world_mode='mode0')
+        super(SimpleMaze1x16sasm0, self).__init__(wsize=16,extended_action_set=False,wmode='mode0')
 
 class SimpleMaze1x16easm0(SimpleMaze):
 
     def __init__(self):
-        super(SimpleMaze1x16easm0, self).__init__(wsize=16,extended_action_set=True,world_mode='mode0')
+        super(SimpleMaze1x16easm0, self).__init__(wsize=16,extended_action_set=True,wmode='mode0')
 
 class SimpleMaze1x32sasm0(SimpleMaze):
 
     def __init__(self):
-        super(SimpleMaze1x32sasm0, self).__init__(wsize=32,extended_action_set=False,world_mode='mode0')
+        super(SimpleMaze1x32sasm0, self).__init__(wsize=32,extended_action_set=False,wmode='mode0')
 
 class SimpleMaze1x32easm0(SimpleMaze):
 
     def __init__(self):
-        super(SimpleMaze1x32easm0, self).__init__(wsize=32,extended_action_set=True,world_mode='mode0')
+        super(SimpleMaze1x32easm0, self).__init__(wsize=32,extended_action_set=True,wmode='mode0')
     
