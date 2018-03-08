@@ -10,6 +10,7 @@ import gym
 from gym import error, spaces, utils, core
 from gym.utils import seeding
 from gym.envs.registration import register
+from six import StringIO
 import math
 import sys
 
@@ -32,12 +33,12 @@ class SimpleMaze(gym.Env):
     metadata = {'render.modes': ["human", 'ansi']}
     action_list = ['left','right','leftskip','rightskip']
 
-    def __init__(self,wsize=None,expansion_flag=None):
+    def __init__(self,wsize=None,extended_action_set=None,world_mode=None):
 
-        if expansion_flag==True:
+        if extended_action_set==True:
             self.action_space = spaces.Discrete(4);
             self.n_actions=4;
-        elif expansion_flag==False:
+        elif extended_action_set==False:
             self.action_space = spaces.Discrete(2);
             self.n_actions=2;
         else:
@@ -75,11 +76,15 @@ class SimpleMaze(gym.Env):
 
     def _reset(self):
         inital = np.zeros(self.world_size);
+        goalpos = self.world_size - 2;
+        startpos = 3;
+        
         self.world = inital;
-        self.world[3]=1;
-        self.world[14]=2;
-        self.agent_position=3;
-        self.goal_position=14;
+        self.world[startpos]=1;
+        self.world[goalpos]=2;
+
+        self.agent_position=startpos;
+        self.goal_position=goalpos;
         return self.world;
 
 
@@ -283,14 +288,23 @@ def test_suite():
         env.new_print(); print(reward)
 """
 
-class SimpleMaze1x16s(SimpleMaze):
+class SimpleMaze1x16sas(SimpleMaze):
 
     def __init__(self):
-        super(SimpleMaze1x16s, self).__init__(wsize=16,expansion_flag=False)
+        super(SimpleMaze1x16sas, self).__init__(wsize=16,extended_action_set=False)
 
-class SimpleMaze1x16c(SimpleMaze):
+class SimpleMaze1x16eas(SimpleMaze):
 
     def __init__(self):
-        super(SimpleMaze1x16c, self).__init__(wsize=16,expansion_flag=True)
+        super(SimpleMaze1x16eas, self).__init__(wsize=16,extended_action_set=True)
 
+class SimpleMaze1x32sas(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x32sas, self).__init__(wsize=32,extended_action_set=False)
+
+class SimpleMaze1x32eas(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x32eas, self).__init__(wsize=32,extended_action_set=True)
     
