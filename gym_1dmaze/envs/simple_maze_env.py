@@ -28,7 +28,7 @@ class SimpleMaze(gym.Env):
 
     """
 
-    metadata = {'render.modes': ['ansi']}
+    metadata = {'render.modes': ["human",'ansi'] }
     #reward_range = (0,2)
     action_list = ['left','right','leftskip','rightskip']
 
@@ -44,9 +44,15 @@ class SimpleMaze(gym.Env):
             raise NotImplementedError
 
         self.world_size=wsize;
+        #low = np.zeros
         #print(self.world_size)
-        self.observation_space = spaces.Discrete(self.world_size);
-        print(self.observation_space.shape);
+        #self.observation_space = spaces.Discrete(self.world_size);
+        self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
+
+        self.world = None;
+        self.viewer = None;
+        #print(self.observation_space.shape);
+        #self.action_space = spaces.Box(low=-10, high=10, shape=(1,))
 
         #if self.world_size > 0:
         #    self.observation_space = spaces.Discrete(self.world_size);
@@ -61,46 +67,54 @@ class SimpleMaze(gym.Env):
         #self.set_goalposition(14);
 
     def create_world(self):
-        listholder = [];
-        for k in range(self.world_size):
-            listholder+=['_'];
-            
-        return listholder;
+        #listholder = [];
+        #for k in range(self.world_size):
+        #    listholder+=['_'];
+        #   
+        #return listholder;
+        inital = np.zeros(self.world_size);
+        self.world = inital;
 
     def swap(self,pos1,pos2):
             self.world[pos1],self.world[pos2] = self.world[pos2],self.world[pos1];
 
     def set_startposition(self,position):
-        self.world[position] = 'a';
+        self.world[position] = 1;
         self.agent_position=position;
 
     def set_goalposition(self,position):
-        self.world[position] = 'T';
+        self.world[position] = 2;
         self.goal_position=position;
 
     def _reset(self):
-        self.world=self.create_world();
-        self.set_startposition(3);
-        self.set_goalposition(14);
-        warray = self.get_features();
-        return warray;
+        #self.world=self.create_world();
+        inital = np.zeros(self.world_size);
+        self.world = inital;
+        self.world[3]=1;
+        self.world[14]=2;
+        self.agent_position=3;
+        self.goal_position=14;
+        #self.set_startposition(3);
+        #self.set_goalposition(14);
+        #warray = self.get_features();
+        return self.world;
 
     def new_print(self):
         #size = len(world);
-        newstring = ''.join(self.world);
-        print(newstring);
+        #newstring = ''.join(self.world);
+        print(self.world);
 
     def get_features(self):
-        new_input = np.zeros(self.world_size); 
-        for r in range(self.world_size):
-            new_input[r] = ord(self.world[r]);
+        #new_input = np.zeros(self.world_size); 
+        #for r in range(self.world_size):
+        #    new_input[r] = ord(self.world[r]);
 
-        return new_input 
+        return self.world
 
     def _render(self, mode='ansi',close=False):
         if mode == 'ansi':
-            newstring = ''.join(self.world);
-            print(newstring);
+            newstring = str(self.world);
+            #print(newstring);
             return newstring;
         else:
             super(SimpleMaze, self).render(mode=mode) # just raise an exception
@@ -144,7 +158,8 @@ class SimpleMaze(gym.Env):
             if self.agent_position==0:
                 r = 0; 
                 end_of_eps = False;
-                return self.get_features(),r,end_of_eps,None;
+                lst = {};
+                return self.get_features(),r,end_of_eps,lst;
             ## Moving internally in the world
             else:
                 ## Moving to goal position 
@@ -152,21 +167,24 @@ class SimpleMaze(gym.Env):
                     r = 1;
                     tstate = self._reset();
                     end_of_eps = True;
-                    return tstate, r, end_of_eps, None;
+                    lst = {};
+                    return tstate, r, end_of_eps, lst;
                 ## only moving around  
                 else:
                     r = 0;
                     end_of_eps = False;
+                    lst = {};
                     self.swap(self.agent_position,self.agent_position-1);
                     self.agent_position=self.agent_position-1;
-                    return self.get_features(),r,end_of_eps,None;
+                    return self.get_features(),r,end_of_eps,lst;
         ## Second action value        
         elif action == 'right':
             ## Going out of the world case
             if self.agent_position==self.world_size-1:
                 r = 0;
                 end_of_eps = False;
-                return self.get_features(),r,end_of_eps,None;
+                lst = {};
+                return self.get_features(),r,end_of_eps,lst;
             ## Moving internally in the World
             else:
                 ## Moving to goal position
@@ -174,21 +192,24 @@ class SimpleMaze(gym.Env):
                     r = 1;
                     tstate = self._reset();
                     end_of_eps = True;
-                    return tstate, r, end_of_eps, None;
+                    lst = {};
+                    return tstate, r, end_of_eps, lst;
                 ## only moving around
                 else:
                     r = 0;
                     end_of_eps = False;
+                    lst = {};
                     self.swap(self.agent_position,self.agent_position+1);
                     self.agent_position=self.agent_position+1;
-                    return self.get_features(), r,end_of_eps,None;
+                    return self.get_features(), r,end_of_eps,lst;
         ## Third action value  
         elif action == 'leftskip':
             ## Goind out of the world
             if self.agent_position==1 or self.agent_position==0:
                 r = 0;
                 end_of_eps = False;
-                return self.get_features(), r,end_of_eps,None;
+                lst = {};
+                return self.get_features(), r,end_of_eps,lst;
             ## Moving internally in the world
             else:
                 ## Moving to goal position
@@ -196,21 +217,24 @@ class SimpleMaze(gym.Env):
                     r = 1;
                     tstate = self._reset();
                     end_of_eps = True;
-                    return tstate, r,end_of_eps,None;
+                    lst = {};
+                    return tstate, r,end_of_eps,lst;
                 ## only moving around
                 else:
                     r = 0;
                     end_of_eps = False;
+                    lst = {};
                     self.swap(self.agent_position,self.agent_position-2);
                     self.agent_position=self.agent_position-2;
-                    return self.get_features(), r,end_of_eps,None;
+                    return self.get_features(), r,end_of_eps,lst;
         ## Fourth action value 
         elif action == 'rightskip':
             ## Goind out of the world
             if self.agent_position==self.world_size-1 or self.agent_position==self.world_size-2:
                 r = 0;
                 end_of_eps = False;
-                return self.get_features(), r,end_of_eps,None;
+                lst = {};
+                return self.get_features(), r,end_of_eps,lst;
             ## Moving internally in the world
             else:
                 ## Moving to goal position
@@ -218,14 +242,16 @@ class SimpleMaze(gym.Env):
                     r = 1;
                     tstate = self._reset();
                     end_of_eps = True;
-                    return tstate, r,end_of_eps,None;
+                    lst = {};
+                    return tstate, r,end_of_eps,lst;
                 ## only moving around
                 else:
                     r = 0;
                     end_of_eps = False;
+                    lst = {};
                     self.swap(self.agent_position,self.agent_position+2);
                     self.agent_position=self.agent_position+2;
-                    return self.get_features(), r,end_of_eps,None;
+                    return self.get_features(), r,end_of_eps,lst;
 
 """
 def test_suite():
