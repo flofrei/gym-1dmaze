@@ -34,7 +34,7 @@ class SimpleMaze(gym.Env):
     action_list = ['left','right','leftskip','rightskip']
     
 
-    def __init__(self,wsize=None,extended_action_set=None,wmode=None):
+    def __init__(self,wsize=None,extended_action_set=None,wmode=None,circular_world=None):
 
         if extended_action_set==True:
             self.action_space = spaces.Discrete(4);
@@ -48,6 +48,8 @@ class SimpleMaze(gym.Env):
         self.world_size=wsize;
         self.world_mode = wmode;
         self.number_of_episodes=0;
+        self.circular = circular_world;
+        self.internal_reward_deduction=0;
         
         self.positionset1 = [3 , self.world_size -2];
         self.positionset2 = [self.world_size -2 , 3 ];
@@ -55,15 +57,18 @@ class SimpleMaze(gym.Env):
         self.positionset4 = [ self.world_size-1 , int(self.world_size/2)];
         
 
+        self.agent_position=-1;
+        self.goal_position=-1;
+
         if self.world_mode == 'mode0':
             self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
-            self.agent_position=-1;
-            self.goal_position=-1;
+        elif self.world_mode == 'mode10':
+        	self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
         elif self.world_mode == 'mode1':
             self.observation_space = spaces.Box(low=0,high=3,shape=(self.world_size,),dtype=np.int8)
-            self.agent_position=-1;
-            self.goal_position=-1;
             self.treasure_position=-1;
+        elif self.world_mode == 'mode42':
+        	self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
         else:
             print("Something has terribly gone wrong!");
 
@@ -75,12 +80,10 @@ class SimpleMaze(gym.Env):
         for k in range(self.world_size):
             listholder+=['_'];
 
-        if self.world_mode == 'mode0':
-            listholder[self.agent_position] = 'a';
-            listholder[self.goal_position] = 'T';
-        elif self.world_mode == 'mode1':
-            listholder[self.agent_position] = 'a';
-            listholder[self.goal_position] = 'T';
+        listholder[self.agent_position] = 'a';
+        listholder[self.goal_position] = 'T';
+
+        if self.world_mode == 'mode1':
             listholder[self.treasure_position] = 't';
         
         return listholder;
@@ -90,19 +93,22 @@ class SimpleMaze(gym.Env):
 
     def _reset(self):
         inital = np.zeros(self.world_size);
+        startpos, goalpos = self.positionset1;
 
-        if self.world_mode == 'mode0':
-            if self.number_of_episodes < 250:
-                startpos, goalpos = self.positionset1;
-            elif self.number_of_episodes < 500:
-                startpos, goalpos = self.positionset2;
-            elif self.number_of_episodes < 750:
-                startpos, goalpos = self.positionset3;
+        if self.world_mode == 'mode10':
+            p = np.random.randint(0,2)
+            if p == 0:
+                startpos,goalpos = self.positionset1;
             else:
-                startpos, goalpos = self.positionset4;
-        else:
-            print("Not implemented YET");
-            #TODO        
+                startpos,goalpos = self.positionset2;
+
+        if self.world_mode == 'mode42':
+            pos1=0
+            pos2=0
+            while pos1 == pos2:
+                pos1 = np.random.randint(0,self.world_size)
+                pos2 = np.random.randint(0,self.world_size)
+            startpos,goalpos = pos1,pos2        
         
         self.world = inital;
         self.world[startpos]=1;
@@ -113,10 +119,6 @@ class SimpleMaze(gym.Env):
 
         self.number_of_episodes +=1 ;
         return self.world;
-
-
-    def get_features(self):
-        return self.world
 
 
     def _render(self, mode='human',close=False):
@@ -156,134 +158,207 @@ class SimpleMaze(gym.Env):
     """
     def _step(self, action_value):
         #Step function in the 1D World
-        #print("------------step----------------")
-
-        if(action_value==0 or action_value==1):
-            P=1;
-            #print("everything is alrigth")
-        else:
-            print("Something terribly went wrong")
 
         action = self.action_list[action_value];
+        self.internal_reward_deduction += 0.1;
         ## First action value
         if action == 'left':
             ## Going out of the world case
             if self.agent_position==0:
-                r = 0; 
-                end_of_eps = False;
-                lst = {};
-                return self.get_features(),r,end_of_eps,lst;
+                if(self.circular):
+                    if(self.goal_position==self.world_size-1):
+                        return self._automatic_end_returner();
+                    else:
+                        self.swap(self.agent_position,self.world_size-1);
+                        self.agent_position=self.world_size-1;
+                        return self._automatic_step_returner();
+                else:
+                    return self._automatic_step_returner();          
             ## Moving internally in the world
             else:
                 ## Moving to goal position 
-                if self.agent_position==self.goal_position+1: 
-                    r = 1;
-                    tstate = self._reset();
-                    end_of_eps = True;
-                    lst = {};
-                    return tstate, r, end_of_eps, lst;
+                if self.agent_position==self.goal_position+1:
+                    return self._automatic_end_returner();
                 ## only moving around  
                 else:
-                    r = 0;
-                    end_of_eps = False;
-                    lst = {};
                     self.swap(self.agent_position,self.agent_position-1);
                     self.agent_position=self.agent_position-1;
-                    return self.get_features(),r,end_of_eps,lst;
+                    return self._automatic_step_returner();
         ## Second action value        
         elif action == 'right':
             ## Going out of the world case
             if self.agent_position==self.world_size-1:
-                r = 0;
-                end_of_eps = False;
-                lst = {};
-                return self.get_features(),r,end_of_eps,lst;
+                if(self.circular):
+                    if(self.goal_position==0):
+                        return self._automatic_end_returner();
+                    else:
+                        self.swap(self.agent_position,0);
+                        self.agent_position=0;
+                        return self._automatic_step_returner();
+                else:
+                    return self._automatic_step_returner();
             ## Moving internally in the World
             else:
                 ## Moving to goal position
                 if self.agent_position==self.goal_position-1:
-                    r = 1;
-                    tstate = self._reset();
-                    end_of_eps = True;
-                    lst = {};
-                    return tstate, r, end_of_eps, lst;
+                    return self._automatic_end_returner();
                 ## only moving around
                 else:
-                    r = 0;
-                    end_of_eps = False;
-                    lst = {};
                     self.swap(self.agent_position,self.agent_position+1);
                     self.agent_position=self.agent_position+1;
-                    return self.get_features(), r,end_of_eps,lst;
+                    return self._automatic_step_returner()
         ## Third action value  
         elif action == 'leftskip':
             ## Goind out of the world
             if self.agent_position==1 or self.agent_position==0:
-                r = 0;
-                end_of_eps = False;
-                lst = {};
-                return self.get_features(), r,end_of_eps,lst;
+                if(self.circular):
+                    if(self.agent_position==1):
+                        if(self.goal_position==self.world_size-1):
+                            return self._automatic_end_returner();
+                        else:
+                            self.swap(self.agent_position,self.world_size-1);
+                            self.agent_position = self.world_size-1;
+                            return self._automatic_step_returner();
+                    if(self.agent_position==0):
+                        if(self.goal_position==self.world_size-2):
+                            return self._automatic_end_returner();
+                        else:
+                            self.swap(self.agent_position,self.world_size-2);
+                            self.agent_position = self.world_size-2;
+                            return self._automatic_step_returner();
+                else:
+                    return self._automatic_step_returner();
             ## Moving internally in the world
             else:
                 ## Moving to goal position
                 if self.agent_position == self.goal_position+2:
-                    r = 1;
-                    tstate = self._reset();
-                    end_of_eps = True;
-                    lst = {};
-                    return tstate, r,end_of_eps,lst;
+                    return self._automatic_end_returner();
                 ## only moving around
                 else:
-                    r = 0;
-                    end_of_eps = False;
-                    lst = {};
                     self.swap(self.agent_position,self.agent_position-2);
                     self.agent_position=self.agent_position-2;
-                    return self.get_features(), r,end_of_eps,lst;
+                    return self._automatic_step_returner();
         ## Fourth action value 
         elif action == 'rightskip':
             ## Goind out of the world
             if self.agent_position==self.world_size-1 or self.agent_position==self.world_size-2:
-                r = 0;
-                end_of_eps = False;
-                lst = {};
-                return self.get_features(), r,end_of_eps,lst;
+                if(self.circular):
+                    if(self.agent_position==self.world_size-1):
+                        if(self.goal_position==1):
+                            return self._automatic_end_returner();
+                        else:
+                            self.swap(self.agent_position,1);
+                            self.agent_position=1;
+                            return _automatic_step_returner();
+                    if(self.agent_position==self.world_size-2):
+                        if(self.goal_position==0):
+                            return self._automatic_end_returner();
+                        else:
+                            self.swap(self.agent_position,0);
+                            self.agent_position=0;
+                            return _automatic_step_returner();
+                else:
+                    return self._automatic_step_returner();
             ## Moving internally in the world
             else:
                 ## Moving to goal position
                 if self.agent_position == self.goal_position-2:
-                    r = 1;
-                    tstate = self._reset();
-                    end_of_eps = True;
-                    lst = {};
-                    return tstate, r,end_of_eps,lst;
+                    return self._automatic_end_returner();
                 ## only moving around
                 else:
-                    r = 0;
-                    end_of_eps = False;
-                    lst = {};
                     self.swap(self.agent_position,self.agent_position+2);
                     self.agent_position=self.agent_position+2;
-                    return self.get_features(), r,end_of_eps,lst;
+                    return self._automatic_step_returner();
+
+    def _automatic_end_returner(self):
+        r = 1 - self.internal_reward_deduction;
+        end_of_eps = True;
+        lst = {};
+        return self.world,r,end_of_eps,lst;
+
+    def _automatic_step_returner(self):
+        r = -0.1;
+        end_of_eps = False;
+        lst = {};
+        return self.world,r,end_of_eps,lst;
 
 
-class SimpleMaze1x16sasm0(SimpleMaze):
-
-    def __init__(self):
-        super(SimpleMaze1x16sasm0, self).__init__(wsize=16,extended_action_set=False,wmode='mode0')
-
-class SimpleMaze1x16easm0(SimpleMaze):
-
-    def __init__(self):
-        super(SimpleMaze1x16easm0, self).__init__(wsize=16,extended_action_set=True,wmode='mode0')
-
-class SimpleMaze1x32sasm0(SimpleMaze):
-
-    def __init__(self):
-        super(SimpleMaze1x32sasm0, self).__init__(wsize=32,extended_action_set=False,wmode='mode0')
-
-class SimpleMaze1x32easm0(SimpleMaze):
+class SimpleMaze1x16sasm0cw0(SimpleMaze):
 
     def __init__(self):
-        super(SimpleMaze1x32easm0, self).__init__(wsize=32,extended_action_set=True,wmode='mode0')
+        super(SimpleMaze1x16sasm0cw0, self).__init__(wsize=16,extended_action_set=False,wmode='mode0',circular_world=False)
+
+class SimpleMaze1x16easm0cw0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x16easm0cw0, self).__init__(wsize=16,extended_action_set=True,wmode='mode0',circular_world=False)
+
+class SimpleMaze1x32sasm0cw0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x32sasm0cw0, self).__init__(wsize=32,extended_action_set=False,wmode='mode0',circular_world=False)
+
+class SimpleMaze1x32easm0cw0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x32easm0cw0, self).__init__(wsize=32,extended_action_set=True,wmode='mode0',circular_world=False)
+
+class SimpleMaze1x16sasm10cw0(SimpleMaze):
+
+	def __init__(self):
+		super(SimpleMaze1x16sasm10cw0,self).__init__(wsize=16,extended_action_set=False,wmode='mode10',circular_world=False)
     
+class SimpleMaze1x16easm10cw0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x16easm10cw0, self).__init__(wsize=16,extended_action_set=True,wmode='mode10',circular_world=False)
+
+class SimpleMaze1x32sasm10cw0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x32sasm10cw0, self).__init__(wsize=32,extended_action_set=False,wmode='mode10',circular_world=False)
+
+class SimpleMaze1x32easm10cw0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x32easm42cw0, self).__init__(wsize=32,extended_action_set=True,wmode='mode10',circular_world=False)
+
+class SimpleMaze1x16sasm42cw0(SimpleMaze):
+
+	def __init__(self):
+		super(SimpleMaze1x16sasm42cw0,self).__init__(wsize=16,extended_action_set=False,wmode='mode42',circular_world=False)
+    
+class SimpleMaze1x16easm42cw0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x16easm42cw0, self).__init__(wsize=16,extended_action_set=True,wmode='mode42',circular_world=False)
+
+class SimpleMaze1x32sasm42cw0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x32sasm42cw0, self).__init__(wsize=32,extended_action_set=False,wmode='mode42',circular_world=False)
+
+class SimpleMaze1x32easm42cw0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x32easm42cw0, self).__init__(wsize=32,extended_action_set=True,wmode='mode42',circular_world=False)
+
+class SimpleMaze1x16sasm42cw1(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x16sasm42cw1,self).__init__(wsize=16,extended_action_set=False,wmode='mode42',circular_world=True)
+    
+class SimpleMaze1x16easm42cw1(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x16easm42cw1, self).__init__(wsize=16,extended_action_set=True,wmode='mode42',circular_world=True)
+
+class SimpleMaze1x32sasm42cw1(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x32sasm42cw1, self).__init__(wsize=32,extended_action_set=False,wmode='mode42',circular_world=True)
+
+class SimpleMaze1x32easm42cw1(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x32easm42cw1, self).__init__(wsize=32,extended_action_set=True,wmode='mode42',circular_world=True)
