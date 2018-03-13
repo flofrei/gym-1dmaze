@@ -48,8 +48,9 @@ class SimpleMaze(gym.Env):
         self.world_size=wsize;
         self.world_mode = wmode;
         self.number_of_episodes=0;
+        self.number_of_steps_taken_in_episode=0;
         self.circular = circular_world;
-        self.internal_reward_deduction=0;
+        self.number_of_minimal_actions=-1;
         
         self.positionset1 = [3 , self.world_size -2];
         self.positionset2 = [self.world_size -2 , 3 ];
@@ -93,6 +94,7 @@ class SimpleMaze(gym.Env):
 
     def _reset(self):
         inital = np.zeros(self.world_size);
+        self.number_of_steps_taken_in_episode=0;
         startpos, goalpos = self.positionset1;
 
         if self.world_mode == 'mode10':
@@ -116,6 +118,18 @@ class SimpleMaze(gym.Env):
 
         self.agent_position=startpos;
         self.goal_position=goalpos;
+
+        if(circular):
+            if(startpos>goal_position):
+                diff = startpos - goalpos;
+            else:
+                diff = goalpos - startpos;
+            self.number_of_minimal_actions = min(diff,self.world_size-diff)
+        else:
+            if(startpos>goal_position):
+                self.number_of_minimal_actions = startpos - goalpos;
+            else:
+                self.number_of_minimal_actions = goalpos - startpos;
 
         self.number_of_episodes +=1 ;
         return self.world;
@@ -160,7 +174,7 @@ class SimpleMaze(gym.Env):
         #Step function in the 1D World
 
         action = self.action_list[action_value];
-        self.internal_reward_deduction += 0.1;
+        self.number_of_steps_taken_in_episode +=1;
         ## First action value
         if action == 'left':
             ## Going out of the world case
@@ -271,13 +285,17 @@ class SimpleMaze(gym.Env):
                     return self._automatic_step_returner();
 
     def _automatic_end_returner(self):
-        r = 1 - self.internal_reward_deduction;
+        r = 1;
         end_of_eps = True;
         lst = {};
         return self.world,r,end_of_eps,lst;
 
     def _automatic_step_returner(self):
-        r = -0.1;
+        if(self.number_of_steps_taken_in_episode<=self.number_of_minimal_actions):
+            r = 0;
+        else:
+            r = -0.1;
+        
         end_of_eps = False;
         lst = {};
         return self.world,r,end_of_eps,lst;
