@@ -52,7 +52,7 @@ class SimpleMaze(gym.Env):
         self.circular = circular_world;
         self.number_of_minimal_actions=-1;
         
-        self.positionset1 = [3 , self.world_size -2];
+        self.positionset1 = [0 , self.world_size -1];
         self.positionset2 = [self.world_size -2 , 3 ];
         self.positionset3 = [ int(self.world_size/2), self.world_size-1];
         self.positionset4 = [ self.world_size-1 , int(self.world_size/2)];
@@ -97,6 +97,9 @@ class SimpleMaze(gym.Env):
         self.number_of_steps_taken_in_episode=0;
         startpos, goalpos = self.positionset1;
 
+        if self.world_mode == 'mode0':
+            startpos, goalpos = self.positionset1;
+
         if self.world_mode == 'mode10':
             p = np.random.randint(0,2)
             if p == 0:
@@ -119,14 +122,14 @@ class SimpleMaze(gym.Env):
         self.agent_position=startpos;
         self.goal_position=goalpos;
 
-        if(circular):
-            if(startpos>goal_position):
+        if(self.circular):
+            if(startpos>goalpos):
                 diff = startpos - goalpos;
             else:
                 diff = goalpos - startpos;
             self.number_of_minimal_actions = min(diff,self.world_size-diff)
         else:
-            if(startpos>goal_position):
+            if(startpos>goalpos):
                 self.number_of_minimal_actions = startpos - goalpos;
             else:
                 self.number_of_minimal_actions = goalpos - startpos;
@@ -287,16 +290,22 @@ class SimpleMaze(gym.Env):
     def _automatic_end_returner(self):
         r = 1;
         end_of_eps = True;
-        lst = {};
+        lst = {self.number_of_steps_taken_in_episode};
         return self.world,r,end_of_eps,lst;
 
     def _automatic_step_returner(self):
-        if(self.number_of_steps_taken_in_episode<=self.number_of_minimal_actions):
-            r = 0;
-        else:
-            r = -0.1;
-        
+        #if(self.number_of_steps_taken_in_episode<=self.number_of_minimal_actions):
+        #    r = 0;
+        #else:
+        #    r = -0.1;
+        r = 0;
         end_of_eps = False;
+        lst = {-1};
+        return self.world,r,end_of_eps,lst;
+
+    def _automatic_overstep_returner(self):
+        r = 0;
+        end_of_eps = True;
         lst = {};
         return self.world,r,end_of_eps,lst;
 
@@ -380,3 +389,23 @@ class SimpleMaze1x32easm42cw1(SimpleMaze):
 
     def __init__(self):
         super(SimpleMaze1x32easm42cw1, self).__init__(wsize=32,extended_action_set=True,wmode='mode42',circular_world=True)
+
+class SimpleMaze1x4sasm42cw0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x4sasm42cw0,self).__init__(wsize=4,extended_action_set=False,wmode='mode42',circular_world=False)
+    
+class SimpleMaze1x4easm42cw0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x4easm42cw0, self).__init__(wsize=4,extended_action_set=True,wmode='mode42',circular_world=False)
+
+class SimpleMaze1x4sasm0cw0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x4sasm0cw0,self).__init__(wsize=4,extended_action_set=False,wmode='mode0',circular_world=False)
+    
+class SimpleMaze1x4easm0cw0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x4easm0cw0, self).__init__(wsize=4,extended_action_set=True,wmode='mode0',circular_world=False)

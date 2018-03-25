@@ -98,3 +98,27 @@ register(
     entry_point='gym_1dmaze.envs:SimpleMaze1x32easm42cw1',
     timestep_limit=2000,
 )
+
+register(
+    id='1DMaze_1x4_simpleactionset_mode42cw0-v0',
+    entry_point='gym_1dmaze.envs:SimpleMaze1x4sasm42cw0',
+    timestep_limit=2000,
+)
+
+register(
+    id='1DMaze_1x4_extendedactionset_mode42cw0-v0',
+    entry_point='gym_1dmaze.envs:SimpleMaze1x4easm42cw0',
+    timestep_limit=2000,
+)
+
+register(
+    id='1DMaze_1x4_simpleactionset_mode0cw0-v0',
+    entry_point='gym_1dmaze.envs:SimpleMaze1x4sasm0cw0',
+    timestep_limit=2000,
+)
+
+register(
+    id='1DMaze_1x4_extendedactionset_mode0cw0-v0',
+    entry_point='gym_1dmaze.envs:SimpleMaze1x4easm0cw0',
+    timestep_limit=2000,
+)
