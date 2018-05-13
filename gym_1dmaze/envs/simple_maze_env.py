@@ -13,7 +13,6 @@ from gym.envs.registration import register
 from six import StringIO
 import math
 import sys
-print(sys.path)
 
 class SimpleMaze(gym.Env):
 
@@ -92,6 +91,20 @@ class SimpleMaze(gym.Env):
     def swap(self,pos1,pos2):
             self.world[pos1],self.world[pos2] = self.world[pos2],self.world[pos1];
 
+    def mover(self,diff):
+      if(diff==-1):
+        new_agent_pos = self.agent_position-diff
+        self.world[new_agent_pos]=1
+        self.world[self.agent_position]=0
+        self.agent_position=self.agent_position-diff
+      elif(diff==+1):
+        new_agent_pos = self.agent_position+diff
+        self.world[new_agent_pos]=1
+        self.world[self.agent_position]=0
+        self.agent_position=self.agent_position+diff
+      else:
+        print("You should not be here!")
+
     def _reset(self):
         inital = np.zeros(self.world_size);
         self.number_of_steps_taken_in_episode=0;
@@ -135,7 +148,7 @@ class SimpleMaze(gym.Env):
             self.number_of_minimal_actions = goalpos - startpos;
 
         self.number_of_episodes +=1 ;
-        return self.world;
+        return np.copy(self.world);
 
 
     def _render(self, mode='human',close=False):
@@ -198,8 +211,9 @@ class SimpleMaze(gym.Env):
                     return self._automatic_end_returner();
                 ## only moving around  
                 else:
-                    self.swap(self.agent_position,self.agent_position-1);
-                    self.agent_position=self.agent_position-1;
+                    #self.swap(self.agent_position,self.agent_position-1);
+                    #self.agent_position=self.agent_position-1;
+                    self.mover(-1)
                     return self._automatic_step_returner();
         ## Second action value        
         elif action == 'right':
@@ -221,8 +235,9 @@ class SimpleMaze(gym.Env):
                     return self._automatic_end_returner();
                 ## only moving around
                 else:
-                    self.swap(self.agent_position,self.agent_position+1);
-                    self.agent_position=self.agent_position+1;
+                    #self.swap(self.agent_position,self.agent_position+1);
+                    #self.agent_position=self.agent_position+1;
+                    self.mover(+1)
                     return self._automatic_step_returner()
         """## Third action value  
         elif action == 'leftskip':
@@ -291,7 +306,7 @@ class SimpleMaze(gym.Env):
         r = 1;
         end_of_eps = True;
         lst = {self.number_of_steps_taken_in_episode};
-        return self.world,r,end_of_eps,lst;
+        return np.copy(self.world),r,end_of_eps,lst;
 
     def _automatic_step_returner(self):
         #if(self.number_of_steps_taken_in_episode<=self.number_of_minimal_actions):
@@ -301,13 +316,13 @@ class SimpleMaze(gym.Env):
         r = 0;
         end_of_eps = False;
         lst = {-1};
-        return self.world,r,end_of_eps,lst;
+        return np.copy(self.world),r,end_of_eps,lst;
 
     def _automatic_overstep_returner(self):
         r = 0;
         end_of_eps = True;
         lst = {};
-        return self.world,r,end_of_eps,lst;
+        return np.copy(self.world),r,end_of_eps,lst;
 
 
 class SimpleMaze1x16sasm0(SimpleMaze):
