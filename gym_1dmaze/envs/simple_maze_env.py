@@ -59,6 +59,7 @@ class SimpleMaze(gym.Env):
 
         self.agent_position=-1;
         self.goal_position=-1;
+        print("Created instance!")
 
         if self.world_mode == 'mode0':
             self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
