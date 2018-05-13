@@ -224,7 +224,7 @@ class SimpleMaze(gym.Env):
                     self.swap(self.agent_position,self.agent_position+1);
                     self.agent_position=self.agent_position+1;
                     return self._automatic_step_returner()
-        ## Third action value  
+        """## Third action value  
         elif action == 'leftskip':
             ## Goind out of the world
             if self.agent_position==1 or self.agent_position==0:
@@ -285,7 +285,7 @@ class SimpleMaze(gym.Env):
                 else:
                     self.swap(self.agent_position,self.agent_position+2);
                     self.agent_position=self.agent_position+2;
-                    return self._automatic_step_returner();
+                    return self._automatic_step_returner();"""
 
     def _automatic_end_returner(self):
         r = 1;
