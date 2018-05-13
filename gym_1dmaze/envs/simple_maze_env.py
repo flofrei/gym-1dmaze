@@ -30,7 +30,7 @@ class SimpleMaze(gym.Env):
     """
 
     metadata = {'render.modes': ["human", 'ansi']}
-    action_list = ['left','right','leftskip','rightskip']
+    action_list = ['left','right']#,'leftskip','rightskip']
     
 
     def __init__(self,wsize=None,extended_action_set=None,wmode=None):
@@ -93,10 +93,10 @@ class SimpleMaze(gym.Env):
 
     def mover(self,diff):
       if(diff==-1):
-        new_agent_pos = self.agent_position-diff
+        new_agent_pos = self.agent_position+diff
         self.world[new_agent_pos]=1
         self.world[self.agent_position]=0
-        self.agent_position=self.agent_position-diff
+        self.agent_position=self.agent_position+diff
       elif(diff==+1):
         new_agent_pos = self.agent_position+diff
         self.world[new_agent_pos]=1
