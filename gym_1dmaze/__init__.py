@@ -104,3 +104,9 @@ register(
     entry_point='gym_1dmaze.envs:SimpleMaze1x10sasm42',
     timestep_limit=2000,
 )
+
+register(
+    id='1DMaze_1x10_simpleactionset_mode0-v0',
+    entry_point='gym_1dmaze.envs:SimpleMaze1x10sasm0',
+    timestep_limit=2000,
+)

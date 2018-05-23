@@ -331,6 +331,11 @@ class SimpleMaze1x16sasm0(SimpleMaze):
     def __init__(self):
         super(SimpleMaze1x16sasm0, self).__init__(wsize=16,extended_action_set=False,wmode='mode0')
 
+class SimpleMaze1x10sasm0(SimpleMaze):
+
+    def __init__(self):
+        super(SimpleMaze1x10sasm0, self).__init__(wsize=10,extended_action_set=False,wmode='mode0')
+
 class SimpleMaze1x16easm0(SimpleMaze):
 
     def __init__(self):
