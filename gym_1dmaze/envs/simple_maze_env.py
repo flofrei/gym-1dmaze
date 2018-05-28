@@ -75,6 +75,7 @@ class SimpleMaze(gym.Env):
 
         self.world = None;
         self.world_as_string = None;
+        self.right_decision = None;
 
     def to_liststring(self):
         listholder = [];
@@ -113,6 +114,7 @@ class SimpleMaze(gym.Env):
 
         if self.world_mode == 'mode0':
             startpos, goalpos = self.positionset1;
+            self.right_decision = 'right'
 
         if self.world_mode == 'mode10':
             p = np.random.randint(0,2)
@@ -145,11 +147,13 @@ class SimpleMaze(gym.Env):
         #else:
         if(startpos>goalpos):
             self.number_of_minimal_actions = startpos - goalpos;
+            self.right_decision = 'left'
         else:
             self.number_of_minimal_actions = goalpos - startpos;
+            self.right_decision = 'right'
 
         self.number_of_episodes +=1 ;
-        return np.copy(self.world);
+        return np.copy(self.world),np.copy(self.right_decision);
 
 
     def _render(self, mode='human',close=False):
