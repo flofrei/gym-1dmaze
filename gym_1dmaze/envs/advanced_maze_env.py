@@ -277,12 +277,12 @@ class AdvancedMaze(gym.Env):
         lst = {-1};
         return np.copy(self.world),r,end_of_eps,lst;
 
-class Advanced10x10m42(AdvancedMaze):
+class AdvancedMaze10x10m42(AdvancedMaze):
 
     def __init__(self):
-        super(Advanced10x10m42, self).__init__(rows=10,columns=10,wmode='mode42')
+        super(AdvancedMaze10x10m42, self).__init__(rows=10,columns=10,wmode='mode42')
 
-class Advanced10x10m42(AdvancedMaze):
+class AdvancedMaze10x10m0(AdvancedMaze):
 
     def __init__(self):
-        super(Advanced10x10m0, self).__init__(rows=10,columns=10,wmode='mode0')
+        super(AdvancedMaze10x10m0, self).__init__(rows=10,columns=10,wmode='mode0')
