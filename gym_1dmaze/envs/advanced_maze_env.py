@@ -78,7 +78,7 @@ class AdvancedMaze(gym.Env):
 
     def concat_string(self):
         new_rows = []
-        for k in range(world_number_of_rows):
+        for k in range(self.world_number_of_rows):
             row_k = copy( self.world_as_string[k] )
             new_row = ''.join(row_k)
             new_row += '\n'
