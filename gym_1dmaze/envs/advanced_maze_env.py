@@ -34,7 +34,8 @@ class AdvancedMaze(gym.Env):
     action_list = ['left','right','up','down']
     
     def __init__(self,rows=None,columns=None,wmode=None):
-		self.action_space = spaces.Discrete(4);
+		
+		self.action_space = spaces.Discrete(4)
 		self.n_actions=4;
 
         self.world_number_of_rows=rows;
@@ -78,7 +79,7 @@ class AdvancedMaze(gym.Env):
 			row_holder.append('\n')
 		self.blank_string=row_holder
 		
-   def empty_world(self):
+    def empty_world(self):
 	    row_holder = []
 		row_ = np.zeros(self.world_number_of_columns)
 		
