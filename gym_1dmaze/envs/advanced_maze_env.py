@@ -16,6 +16,7 @@ import sys
 from copy import copy, deepcopy
 
 class AdvancedMaze(gym.Env):
+
     """
     # Set this in SOME subclasses
     metadata = {'render.modes': []}
@@ -28,6 +29,7 @@ class AdvancedMaze(gym.Env):
     observation_space = None
 
     """
+
   metadata = {'render.modes': ["human", 'ansi']}
   action_list = ['left','right','up','down']
     
