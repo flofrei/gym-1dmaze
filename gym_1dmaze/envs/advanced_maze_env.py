@@ -61,7 +61,6 @@ class AdvancedMaze(gym.Env):
 
         for k in range(self.world_number_of_rows):
             row_holder.append( copy(tmp) )
-            row_holder.append('\n')
         self.blank_string=row_holder
 
     def empty_world(self):
@@ -73,6 +72,7 @@ class AdvancedMaze(gym.Env):
 
     def to_liststring(self):
         self.world_as_string = deepcopy(self.blank_string)
+
         self.string_setter(self.agent_position,'a')
         self.string_setter(self.goal_position,'T')
 
@@ -81,14 +81,15 @@ class AdvancedMaze(gym.Env):
         for k in range(world_number_of_rows):
             row_k = copy( self.world_as_string[k] )
             new_row = ''.join(row_k)
+            new_row += '\n'
             new_rows.append(new_row)
 
         new_world = ''.join(new_rows)
         return new_world
 
-    def string_setter(self,position,value):
+    def string_setter(self,position,str_val):
         world_row_ref = self.world_as_string[position[0]]
-        world_row_ref[position[1]]=value
+        world_row_ref[position[1]] = str_val
 
     def mover(self,rel_movment):
         #new_agent_pos = [copy(self.agent_position[0])+rel_movment[0], copy(self.agent_position[1])+rel_movment[1]]
