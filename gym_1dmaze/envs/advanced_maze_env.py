@@ -80,11 +80,11 @@ class AdvancedMaze(gym.Env):
         new_rows = []
         for k in range(self.world_number_of_rows):
             row_k = copy( self.world_as_string[k] )
-            new_row = ''.join(row_k)
+            new_row = ''.join(row_k) #not string instance
             new_row += '\n'
             new_rows.append(new_row)
 
-        new_world = ''.join(new_rows)
+        new_world = ''.join(new_rows) 
         return new_world
 
     def string_setter(self,position,str_val):
