@@ -110,10 +110,10 @@ class AdvancedMaze(gym.Env):
             pos1=[0,0]
             pos2=[0,0]
             while pos1 == pos2:
-        new_column_inds = np.random.randint(low=0,high=self.world_number_of_columns-1,size=2)
-        new_row_inds = np.random.randint(low=0,high=self.world_number_of_rows-1,size=2)
-        pos1 = [new_row_inds[0],new_column_inds[0]]
-        pos2 = [new_row_inds[1],new_column_inds[1]]
+                new_column_inds = np.random.randint(low=0,high=self.world_number_of_columns-1,size=2)
+                new_row_inds = np.random.randint(low=0,high=self.world_number_of_rows-1,size=2)
+                pos1 = [new_row_inds[0],new_column_inds[0]]
+                pos2 = [new_row_inds[1],new_column_inds[1]]
             startpos = pos1
             goalpos = pos2
 
