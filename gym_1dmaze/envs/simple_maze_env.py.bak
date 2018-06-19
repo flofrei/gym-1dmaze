@@ -31,7 +31,7 @@ class SimpleMaze(gym.Env):
 
     metadata = {'render.modes': ["human", 'ansi']}
     action_list = ['left','right']#,'leftskip','rightskip']
-
+    
 
     def __init__(self,wsize=None,extended_action_set=None,wmode=None):
 
@@ -50,12 +50,12 @@ class SimpleMaze(gym.Env):
         self.number_of_steps_taken_in_episode=0;
         #self.circular = False;
         self.number_of_minimal_actions=-1;
-
+        
         self.positionset1 = [0 , self.world_size -1];
         self.positionset2 = [self.world_size -2 , 3 ];
         self.positionset3 = [ int(self.world_size/2), self.world_size-1];
         self.positionset4 = [ self.world_size-1 , int(self.world_size/2)];
-
+        
 
         self.agent_position=-1;
         self.goal_position=-1;
@@ -64,12 +64,12 @@ class SimpleMaze(gym.Env):
         if self.world_mode == 'mode0':
             self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
         elif self.world_mode == 'mode10':
-            self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
+        	self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
         elif self.world_mode == 'mode1':
             self.observation_space = spaces.Box(low=0,high=3,shape=(self.world_size,),dtype=np.int8)
             self.treasure_position=-1;
         elif self.world_mode == 'mode42':
-            self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
+        	self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_size,),dtype=np.int8)
         else:
             print("Something has terribly gone wrong!");
 
@@ -87,25 +87,25 @@ class SimpleMaze(gym.Env):
 
         if self.world_mode == 'mode1':
             listholder[self.treasure_position] = 't';
-
+        
         return listholder;
 
     def swap(self,pos1,pos2):
-        self.world[pos1],self.world[pos2] = self.world[pos2],self.world[pos1];
+            self.world[pos1],self.world[pos2] = self.world[pos2],self.world[pos1];
 
     def mover(self,diff):
-        if(diff==-1):
-            new_agent_pos = self.agent_position+diff
-            self.world[new_agent_pos]=1
-            self.world[self.agent_position]=0
-            self.agent_position=self.agent_position+diff
-        elif(diff==+1):
-            new_agent_pos = self.agent_position+diff
-            self.world[new_agent_pos]=1
-            self.world[self.agent_position]=0
-            self.agent_position=self.agent_position+diff
-        else:
-            print("You should not be here!")
+      if(diff==-1):
+        new_agent_pos = self.agent_position+diff
+        self.world[new_agent_pos]=1
+        self.world[self.agent_position]=0
+        self.agent_position=self.agent_position+diff
+      elif(diff==+1):
+        new_agent_pos = self.agent_position+diff
+        self.world[new_agent_pos]=1
+        self.world[self.agent_position]=0
+        self.agent_position=self.agent_position+diff
+      else:
+        print("You should not be here!")
 
     def _reset(self):
         inital = np.zeros(self.world_size);
@@ -129,8 +129,8 @@ class SimpleMaze(gym.Env):
             while pos1 == pos2:
                 pos1 = np.random.randint(0,self.world_size)
                 pos2 = np.random.randint(0,self.world_size)
-            startpos,goalpos = pos1,pos2
-
+            startpos,goalpos = pos1,pos2        
+        
         self.world = inital;
         self.world[startpos]=1;
         self.world[goalpos]=2;
@@ -158,7 +158,7 @@ class SimpleMaze(gym.Env):
 
     def _render(self, mode='human',close=False):
         outfile = StringIO() if mode == 'ansi' else sys.stdout
-
+    
         lstholder = self.to_liststring();
         outfile.write(''.join(lstholder));
         outfile.write("\n");
@@ -166,7 +166,7 @@ class SimpleMaze(gym.Env):
         # No need to return anything for human
         if mode != 'human':
             return outfile
-
+        
         #TODO ansi mode is not working yet since StringIO is not used correctly
 
     def _seed(self, seed=None):
@@ -208,19 +208,19 @@ class SimpleMaze(gym.Env):
                 #        self.agent_position=self.world_size-1;
                 #        return self._automatic_step_returner();
                 #else:
-                return self._automatic_step_returner();
+                return self._automatic_step_returner();          
             ## Moving internally in the world
             else:
-                ## Moving to goal position
+                ## Moving to goal position 
                 if self.agent_position==self.goal_position+1:
                     return self._automatic_end_returner();
-                ## only moving around
+                ## only moving around  
                 else:
                     #self.swap(self.agent_position,self.agent_position-1);
                     #self.agent_position=self.agent_position-1;
                     self.mover(-1)
                     return self._automatic_step_returner();
-        ## Second action value
+        ## Second action value        
         elif action == 'right':
             ## Going out of the world case
             if self.agent_position==self.world_size-1:
@@ -244,7 +244,7 @@ class SimpleMaze(gym.Env):
                     #self.agent_position=self.agent_position+1;
                     self.mover(+1)
                     return self._automatic_step_returner()
-        """## Third action value
+        """## Third action value  
         elif action == 'leftskip':
             ## Goind out of the world
             if self.agent_position==1 or self.agent_position==0:
@@ -275,7 +275,7 @@ class SimpleMaze(gym.Env):
                     self.swap(self.agent_position,self.agent_position-2);
                     self.agent_position=self.agent_position-2;
                     return self._automatic_step_returner();
-        ## Fourth action value
+        ## Fourth action value 
         elif action == 'rightskip':
             ## Goind out of the world
             if self.agent_position==self.world_size-1 or self.agent_position==self.world_size-2:
@@ -357,9 +357,9 @@ class SimpleMaze1x32easm0(SimpleMaze):
 
 class SimpleMaze1x16sasm10(SimpleMaze):
 
-    def __init__(self):
-        super(SimpleMaze1x16sasm10,self).__init__(wsize=16,extended_action_set=False,wmode='mode10')
-
+	def __init__(self):
+		super(SimpleMaze1x16sasm10,self).__init__(wsize=16,extended_action_set=False,wmode='mode10')
+    
 class SimpleMaze1x16easm10(SimpleMaze):
 
     def __init__(self):
@@ -377,9 +377,9 @@ class SimpleMaze1x32easm10(SimpleMaze):
 
 class SimpleMaze1x16sasm42(SimpleMaze):
 
-    def __init__(self):
-        super(SimpleMaze1x16sasm42,self).__init__(wsize=16,extended_action_set=False,wmode='mode42')
-
+	def __init__(self):
+		super(SimpleMaze1x16sasm42,self).__init__(wsize=16,extended_action_set=False,wmode='mode42')
+    
 class SimpleMaze1x16easm42(SimpleMaze):
 
     def __init__(self):
@@ -399,7 +399,7 @@ class SimpleMaze1x4sasm42(SimpleMaze):
 
     def __init__(self):
         super(SimpleMaze1x4sasm42,self).__init__(wsize=4,extended_action_set=False,wmode='mode42')
-
+    
 class SimpleMaze1x4easm42(SimpleMaze):
 
     def __init__(self):
@@ -409,7 +409,7 @@ class SimpleMaze1x4sasm0(SimpleMaze):
 
     def __init__(self):
         super(SimpleMaze1x4sasm0,self).__init__(wsize=4,extended_action_set=False,wmode='mode0')
-
+    
 class SimpleMaze1x4easm0(SimpleMaze):
 
     def __init__(self):

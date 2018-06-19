@@ -75,17 +75,17 @@ class AdvancedMaze(gym.Env):
         self.world_as_string = deepcopy(self.blank_string)
         self.string_setter(self.agent_position,'a')
         self.string_setter(self.goal_position,'T')
-
+        
     def concat_string(self):
         new_rows = []
         for k in range(world_number_of_rows):
             row_k = copy( self.world_as_string[k] )
             new_row = ''.join(row_k)
             new_rows.append(new_row)
-
+          
         new_world = ''.join(new_rows)
         return new_world
-
+	    
     def string_setter(self,position,value):
         world_row_ref = self.world_as_string[position[0]]
         world_row_ref[position[1]]=value
@@ -100,7 +100,7 @@ class AdvancedMaze(gym.Env):
         self.world[old_position[0],old_position[1]] = 0.
         self.world[new_position[0],new_position[1]] = 1.
         self.agent_position = new_position
-
+        
     def _reset(self):
         self.empty_world()
         self.number_of_steps_taken_in_episode=0;
@@ -115,7 +115,7 @@ class AdvancedMaze(gym.Env):
         pos1 = [new_row_inds[0],new_column_inds[0]]
         pos2 = [new_row_inds[1],new_column_inds[1]]
             startpos = pos1
-            goalpos = pos2
+            goalpos = pos2        
 
         self.world[startpos[0],startpos[1]]=1.;
         self.world[goalpos[0],goalpos[1]]=2.;
@@ -129,7 +129,7 @@ class AdvancedMaze(gym.Env):
         else:
             a = goalpos[0] - startpos[0];
             self.right_decision['right']=a
-
+            
         if(startpos[1]>goalpos[1]):
             b = startpos[1] - goalpos[1];
             self.right_decision['down']=b
@@ -137,7 +137,7 @@ class AdvancedMaze(gym.Env):
         else:
             b = goalpos[1] - startpos[1];
             self.right_decision['up']=b
-
+            
         self.number_of_minimal_actions=a+b
 
         self.number_of_episodes +=1 ;
@@ -206,17 +206,17 @@ class AdvancedMaze(gym.Env):
             goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
             ## Going out of the world case
             if(left_border):
-                return self._automatic_step_returner();
+                return self._automatic_step_returner();          
             ## Moving internally in the world
             else:
-                ## Moving to goal position
+                ## Moving to goal position 
                 if(goal_flag):
                     return self._automatic_end_returner();
-                ## only moving around
+                ## only moving around  
                 else:
                     self.mover(rel_mov)
                     return self._automatic_step_returner();
-        ## Second action value
+        ## Second action value        
         elif action == 'right':
             rel_mov = [1,0]
             goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
@@ -232,35 +232,35 @@ class AdvancedMaze(gym.Env):
                 else:
                     self.mover(rel_mov)
                     return self._automatic_step_returner()
-        ## Third action value
+        ## Third action value 
         elif action == 'up':
             rel_mov = [0,1]
             goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
             ## Going out of the world case
             if(top_border):
-                return self._automatic_step_returner();
+                return self._automatic_step_returner();          
             ## Moving internally in the world
             else:
-                ## Moving to goal position
+                ## Moving to goal position 
                 if(goal_flag):
                     return self._automatic_end_returner();
-                ## only moving around
+                ## only moving around  
                 else:
                     self.mover(rel_mov)
                     return self._automatic_step_returner();
-        ## Forth action value
+        ## Forth action value 
         elif action == 'down':
             rel_mov = [0,-1]
             goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
             ## Going out of the world case
             if(bottom_border):
-                return self._automatic_step_returner();
+                return self._automatic_step_returner();          
             ## Moving internally in the world
             else:
-                ## Moving to goal position
+                ## Moving to goal position 
                 if(goal_flag):
                     return self._automatic_end_returner();
-                ## only moving around
+                ## only moving around  
                 else:
                     self.mover(rel_mov)
                     return self._automatic_step_returner();
@@ -281,7 +281,7 @@ class Advanced10x10m42(AdvancedMaze):
 
     def __init__(self):
         super(Advanced10x10m42, self).__init__(rows=10,columns=10,wmode='mode42')
-
+        
 class Advanced10x10m42(AdvancedMaze):
 
     def __init__(self):
