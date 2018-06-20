@@ -57,7 +57,7 @@ class AdvancedMaze(gym.Env):
         row_holder = []
         tmp = []
         for j in range(self.world_number_of_columns):
-            tmp.append(['_'])
+            tmp.append('_')
 
         for k in range(self.world_number_of_rows):
             row_holder.append( copy(tmp) )
