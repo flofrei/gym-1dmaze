@@ -267,7 +267,7 @@ class AdvancedMaze(gym.Env):
                     return self._automatic_step_returner();
 
     def _automatic_end_returner(self):
-        r = 1;
+        r = 15;
         end_of_eps = True;
         lst = {self.number_of_steps_taken_in_episode};
         return np.copy(self.world),r,end_of_eps,lst;
