@@ -40,7 +40,7 @@ class AdvancedMaze(gym.Env):
         self.number_of_episodes=0;
         self.number_of_steps_taken_in_episode=0;
 
-        self.positionset1 = [ [4,4] ,[6,6] ];
+        self.positionset1 = [ [4,4] ,[5,5] ];
 
         self.agent_position=[-1,-1];
         self.goal_position=[-1,-1];
@@ -267,19 +267,19 @@ class AdvancedMaze(gym.Env):
                     return self._automatic_step_returner();
 
     def _automatic_end_returner(self):
-        r = 15;
+        r = 1;
         end_of_eps = True;
         lst = {self.number_of_steps_taken_in_episode};
         return np.copy(self.world),r,end_of_eps,lst;
 
     def _automatic_step_returner(self):
-        r = -1;
+        r = 0;
         end_of_eps = False;
         lst = {-1};
         return np.copy(self.world),r,end_of_eps,lst;
 
     def _automatic_wall_returner(self):
-        r = -2;
+        r = -1;
         end_of_eps = False;
         lst = {-1};
         return np.copy(self.world),r,end_of_eps,lst;
