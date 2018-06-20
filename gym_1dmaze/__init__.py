@@ -114,11 +114,11 @@ register(
 register(
     id='2DMaze_10x10_mode42-v0',
     entry_point='gym_1dmaze.envs:AdvancedMaze10x10m42',
-    timestep_limit=50,
+    timestep_limit=100,
 )
 
 register(
     id='2DMaze_10x10_mode0-v0',
     entry_point='gym_1dmaze.envs:AdvancedMaze10x10m0',
-    timestep_limit=50,
+    timestep_limit=100,
 )
