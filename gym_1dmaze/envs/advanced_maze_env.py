@@ -40,7 +40,7 @@ class AdvancedMaze(gym.Env):
         self.number_of_episodes=0;
         self.number_of_steps_taken_in_episode=0;
 
-        self.positionset1 = [ [0,0] ,[ self.world_number_of_rows -1,self.world_number_of_columns -1] ];
+        self.positionset1 = [ [4,4] ,[6,6] ];
 
         self.agent_position=[-1,-1];
         self.goal_position=[-1,-1];
