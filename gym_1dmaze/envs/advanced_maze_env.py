@@ -207,7 +207,7 @@ class AdvancedMaze(gym.Env):
             goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
             ## Going out of the world case
             if(left_border):
-                return self._automatic_step_returner();
+                return self._automatic_wall_returner();
             ## Moving internally in the world
             else:
                 ## Moving to goal position
@@ -223,7 +223,7 @@ class AdvancedMaze(gym.Env):
             goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
             ## Going out of the world case
             if(right_border):
-                return self._automatic_step_returner();
+                return self._automatic_wall_returner();
             ## Moving internally in the World
             else:
                 ## Moving to goal position
@@ -239,7 +239,7 @@ class AdvancedMaze(gym.Env):
             goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
             ## Going out of the world case
             if(top_border):
-                return self._automatic_step_returner();
+                return self._automatic_wall_returner();
             ## Moving internally in the world
             else:
                 ## Moving to goal position
@@ -255,7 +255,7 @@ class AdvancedMaze(gym.Env):
             goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
             ## Going out of the world case
             if(bottom_border):
-                return self._automatic_step_returner();
+                return self._automatic_wall_returner();
             ## Moving internally in the world
             else:
                 ## Moving to goal position
@@ -274,6 +274,12 @@ class AdvancedMaze(gym.Env):
 
     def _automatic_step_returner(self):
         r = -1;
+        end_of_eps = False;
+        lst = {-1};
+        return np.copy(self.world),r,end_of_eps,lst;
+
+    def _automatic_wall_returner(self):
+        r = -2;
         end_of_eps = False;
         lst = {-1};
         return np.copy(self.world),r,end_of_eps,lst;
