@@ -192,18 +192,17 @@ class AdvancedMaze(gym.Env):
         top_border=False
 
         if(self.agent_position[0]==0):
-            left_border=True
-        if(self.agent_position[0]==self.world_number_of_columns-1):
-            right_border=True
-
-        if(self.agent_position[1]==0):
-            bottom_border=True
-        if(self.agent_position[1]==self.world_number_of_rows-1):
             top_border=True
+        if(self.agent_position[0]==self.world_number_of_rows-1):
+            bottom_border=True
+        if(self.agent_position[1]==0):
+            left_border=True
+        if(self.agent_position[1]==self.world_number_of_columns-1):
+            right_border=True
 
         ## First action value
         if action == 'left':
-            rel_mov = [-1,0]
+            rel_mov = [0,-1]           
             goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
             ## Going out of the world case
             if(left_border):
@@ -219,7 +218,7 @@ class AdvancedMaze(gym.Env):
                     return self._automatic_step_returner();
         ## Second action value
         elif action == 'right':
-            rel_mov = [1,0]
+            rel_mov = [0,1]
             goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
             ## Going out of the world case
             if(right_border):
@@ -235,7 +234,7 @@ class AdvancedMaze(gym.Env):
                     return self._automatic_step_returner()
         ## Third action value
         elif action == 'up':
-            rel_mov = [0,1]
+            rel_mov = [-1,0]
             goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
             ## Going out of the world case
             if(top_border):
@@ -250,8 +249,8 @@ class AdvancedMaze(gym.Env):
                     self.mover(rel_mov)
                     return self._automatic_step_returner();
         ## Forth action value
-        elif action == 'down':
-            rel_mov = [0,-1]
+        elif action == 'down': 
+            rel_mov = [1,0]
             goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
             ## Going out of the world case
             if(bottom_border):
