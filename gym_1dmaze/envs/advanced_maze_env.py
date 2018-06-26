@@ -40,7 +40,7 @@ class AdvancedMaze(gym.Env):
         self.number_of_episodes=0;
         self.number_of_steps_taken_in_episode=0;
 
-        self.positionset1 = [ [4,4] ,[5,5] ];
+        self.positionset1 = [ [1,1] ,[self.world_number_of_rows-1,self.world_number_of_columns-1] ];
 
         self.agent_position=[-1,-1];
         self.goal_position=[-1,-1];
@@ -111,15 +111,24 @@ class AdvancedMaze(gym.Env):
             pos1=[0,0]
             pos2=[0,0]
             while pos1 == pos2:
-                new_column_inds = np.random.randint(low=0,high=self.world_number_of_columns-1,size=2)
-                new_row_inds = np.random.randint(low=0,high=self.world_number_of_rows-1,size=2)
+                new_column_inds = np.random.randint(low=0,high=self.world_number_of_columns,size=2)
+                new_row_inds = np.random.randint(low=0,high=self.world_number_of_rows,size=2)
                 pos1 = [new_row_inds[0],new_column_inds[0]]
                 pos2 = [new_row_inds[1],new_column_inds[1]]
             startpos = pos1
             goalpos = pos2
 
-        self.world[startpos[0],startpos[1]]=1.;
-        self.world[goalpos[0],goalpos[1]]=2.;
+        if self.world_mode == 'mode33':
+            new_column_inds = np.random.randint(low=0,high=self.world_number_of_columns,size=1)
+            new_row_inds = np.random.randint(low=0,high=self.world_number_of_rows,size=1)
+            startpos = [new_row_inds[0],new_column_inds[0]]
+            self.goal_direction = np.random.randint(low=0,high=4,size=1)
+
+        self.world[startpos[0],startpos[1]]=1.
+        self.world[goalpos[0],goalpos[1]]=2.
+
+        if self.world_mode == 'mode33':
+            self.world[goalpos[0],goalpos[1]]=0.
 
         self.agent_position=startpos;
         self.goal_position=goalpos;
@@ -199,6 +208,31 @@ class AdvancedMaze(gym.Env):
             left_border=True
         if(self.agent_position[1]==self.world_number_of_columns-1):
             right_border=True
+
+        if(self.world_mode == 'mode33'):
+            goal_line = self.action_list[self.goal_direction];
+            if(top_border and action=='up'):
+                if(goal_line=='up'):
+                    return self._automatic_end_returner();
+                else:
+                    return self._automatic_wall_returner();
+            elif(bottom_border and action=='down'):
+                if(goal_line=='down'):
+                    return self._automatic_end_returner();
+                else:
+                    return self._automatic_wall_returner();
+            elif(left_border and action=='left'):
+                if(goal_line=='left'):
+                    return self._automatic_end_returner();
+                else:
+                    return self._automatic_wall_returner();
+            elif(right_border and action=='right'):
+                if(goal_line=='right'):
+                    return self._automatic_end_returner();
+                else:
+                    return self._automatic_wall_returner();
+            else:
+                return self._automatic_step_returner();
 
         ## First action value
         if action == 'left':
@@ -292,3 +326,25 @@ class AdvancedMaze10x10m0(AdvancedMaze):
 
     def __init__(self):
         super(AdvancedMaze10x10m0, self).__init__(rows=10,columns=10,wmode='mode0')
+
+class AdvancedMaze4x4m42(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze4x4m42, self).__init__(rows=4,columns=4,wmode='mode42')
+
+class AdvancedMaze4x4m0(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze4x4m0, self).__init__(rows=4,columns=4,wmode='mode0')
+
+class AdvancedMaze4x4m33(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze4x4m33, self).__init__(rows=4,columns=4,wmode='mode33')
+
+class AdvancedMaze10x10m33(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze10x10m33, self).__init__(rows=10,columns=10,wmode='mode33')
+
+
