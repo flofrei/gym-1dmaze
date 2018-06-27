@@ -333,7 +333,7 @@ class AdvancedMazeLine4x4m0(AdvancedMazeLine):
 class AdvancedMazeLine10x10m42(AdvancedMazeLine):
 
     def __init__(self):
-        super(AdvancedMazeLine4x4m42, self).__init__(rows=10,columns=10,wmode='mode42')
+        super(AdvancedMazeLine10x10m42, self).__init__(rows=10,columns=10,wmode='mode42')
 
 class AdvancedMazeLine10x10m0(AdvancedMazeLine):
 
