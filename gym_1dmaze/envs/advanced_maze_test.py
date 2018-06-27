@@ -41,6 +41,8 @@ class AdvancedMazeLine(gym.Env):
         self.number_of_steps_taken_in_episode=0;
 
         self.agent_position=[-1,-1];
+        self.goal_row = -1
+        self.goal_column = -1
         print("Created instance!")
 
         self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_number_of_rows,self.world_number_of_columns),dtype=np.int8)
