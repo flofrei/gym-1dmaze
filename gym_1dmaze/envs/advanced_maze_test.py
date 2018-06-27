@@ -15,7 +15,7 @@ import math
 import sys
 from copy import copy, deepcopy
 
-class AdvancedMaze(gym.Env):
+class AdvancedMazeLine(gym.Env):
     """
     # Set this in SOME subclasses
     metadata = {'render.modes': []}
@@ -40,10 +40,7 @@ class AdvancedMaze(gym.Env):
         self.number_of_episodes=0;
         self.number_of_steps_taken_in_episode=0;
 
-        self.positionset1 = [ [1,1] ,[self.world_number_of_rows-1,self.world_number_of_columns-1] ];
-
         self.agent_position=[-1,-1];
-        self.goal_position=[-1,-1];
         print("Created instance!")
 
         self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_number_of_rows,self.world_number_of_columns),dtype=np.int8)
@@ -72,9 +69,8 @@ class AdvancedMaze(gym.Env):
 
     def to_liststring(self):
         self.world_as_string = deepcopy(self.blank_string)
-
+        self.string_setter_line(self.goal_row,self.goal_column,'T')
         self.string_setter(self.agent_position,'a')
-        self.string_setter(self.goal_position,'T')
 
     def concat_string(self):
         new_rows = []
@@ -91,55 +87,97 @@ class AdvancedMaze(gym.Env):
         world_row_ref = self.world_as_string[position[0]]
         world_row_ref[position[1]] = str_val
 
-    def mover(self,rel_movment):
+    def string_setter_line(self,row_ind,column_ind,str_val):
+        if(row_ind==-1):
+            for k in range(self.world_number_of_rows):
+                row_k = self.world_as_string[k]
+                row_k[column_ind] = str_val
+        if(column_ind==-1):
+            row_ref = self.world_as_string[row_ind]
+            for k in range(self.world_number_of_columns):
+                row_ref[k]=str_val
+
+    def mover(self,rel_movment,symb):
         #new_agent_pos = [copy(self.agent_position[0])+rel_movment[0], copy(self.agent_position[1])+rel_movment[1]]
         new_agent_pos = copy( [sum(x) for x in zip(self.agent_position, rel_movment)] )
-        self.move_agent(new_agent_pos)
+        self.move_agent(new_agent_pos,symb)
 
-    def move_agent(self,new_position):
+    def move_agent(self,new_position,symb):
         old_position = self.agent_position
-        self.world[old_position[0],old_position[1]] = 0.
+        self.world[old_position[0],old_position[1]] = symb
         self.world[new_position[0],new_position[1]] = 1.
         self.agent_position = new_position
+    
+    def fill_line(self):
+        if(self.goal_row == -1):
+            for k in range(self.world_number_of_rows):
+                self.world[k,self.goal_column]=2.
+        if(self.goal_column == -1):
+            for k in range(self.world_number_of_columns):
+                self.world[self.goal_row,k]=2.
+    def fill_agent(self):
+        self.world[self.agent_position[0],self.agent_position[1]] = 1.
 
     def _reset(self):
         self.empty_world()
         self.number_of_steps_taken_in_episode=0;
-        [startpos, goalpos] = self.positionset1;
+        self.agent_position = [1,1]
+        self.goal_row = self.world_number_of_rows-1
+        self.top=False
+        self.bottom=True
+        self.left=False
+        self.right=False
+        goal_ind = 3
+        self.goal_column = -1
 
         if self.world_mode == 'mode42':
-            pos1=[0,0]
-            pos2=[0,0]
-            while pos1 == pos2:
-                new_column_inds = np.random.randint(low=0,high=self.world_number_of_columns,size=2)
-                new_row_inds = np.random.randint(low=0,high=self.world_number_of_rows,size=2)
-                pos1 = [new_row_inds[0],new_column_inds[0]]
-                pos2 = [new_row_inds[1],new_column_inds[1]]
-            startpos = pos1
-            goalpos = pos2
+            goal=-1
+            goal_ind = np.random.randint(low=0,high=4)
+            pos1 = np.random.randint(low=0,high=self.world_number_of_rows)          
+            pos2 = np.random.randint(low=0,high=self.world_number_of_columns)
+            agent_pos = [pos1,pos2]
+            if(goal_ind==0):
+                self.goal_row = -1
+                self.goal_column = 0
+                self.top=False
+                self.bottom=False
+                self.left=True
+                self.right=False
+            elif(goal_ind==1):
+                self.goal_row = -1
+                self.goal_column = self.world_number_of_columns-1
+                self.top=False
+                self.bottom=False
+                self.left=False
+                self.right=True
+            elif(goal_ind==2):
+                self.goal_row = 0
+                self.goal_column = -1
+                self.top=True
+                self.bottom=False
+                self.left=False
+                self.right=False
+            elif(goal_ind==3):
+                self.goal_row = self.world_number_of_rows-1
+                self.goal_column = -1
+                self.top=False
+                self.bottom=True
+                self.left=False
+                self.right=False
+            else:
+                print("Bad branching")
+        
+        self.fill_line()
+        self.fill_agent()
 
-        self.world[startpos[0],startpos[1]]=1.
-        self.world[goalpos[0],goalpos[1]]=2.
-
-        self.agent_position=startpos;
-        self.goal_position=goalpos;
-
-        if(startpos[0]>goalpos[0]):
-            a = startpos[0] - goalpos[0];
-            self.right_decision['left']=a
-        else:
-            a = goalpos[0] - startpos[0];
-            self.right_decision['right']=a
-
-        if(startpos[1]>goalpos[1]):
-            b = startpos[1] - goalpos[1];
-            self.right_decision['down']=b
-
-        else:
-            b = goalpos[1] - startpos[1];
-            self.right_decision['up']=b
-
-        self.number_of_minimal_actions=a+b
+        if(goal_ind == 0):
+            self.right_decision['left']=1.
+        elif(goal_ind == 1):
+            self.right_decision['right']=1.
+        elif(goal_ind == 2):
+            self.right_decision['up']=1.
+        elif(goal_ind == 3):
+            self.right_decision['down']=1.
 
         self.number_of_episodes +=1 ;
         return np.copy(self.world),copy(self.right_decision);
@@ -193,77 +231,70 @@ class AdvancedMaze(gym.Env):
 
         if(self.agent_position[0]==0):
             top_border=True
+            if(action == 'up'):
+                going_up = True
+            else:
+                going_up = False
         if(self.agent_position[0]==self.world_number_of_rows-1):
             bottom_border=True
+            if(action == 'down'):
+                going_down = True
+            else:
+                going_down = False
         if(self.agent_position[1]==0):
             left_border=True
+            if(action == 'left'):
+                going_left = True
+            else:
+                going_left = False
         if(self.agent_position[1]==self.world_number_of_columns-1):
             right_border=True
-
-        ## First action value
-        if action == 'left':
-            rel_mov = [0,-1]           
-            goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
-            ## Going out of the world case
-            if(left_border):
-                return self._automatic_wall_returner();
-            ## Moving internally in the world
+            if(action == 'right'):
+                going_right = True
             else:
-                ## Moving to goal position
-                if(goal_flag):
-                    return self._automatic_end_returner();
-                ## only moving around
-                else:
-                    self.mover(rel_mov)
-                    return self._automatic_step_returner();
-        ## Second action value
+                going_right = False
+
+        
+        if action == 'left':
+            rel_mov = [0,-1]
         elif action == 'right':
             rel_mov = [0,1]
-            goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
-            ## Going out of the world case
-            if(right_border):
-                return self._automatic_wall_returner();
-            ## Moving internally in the World
-            else:
-                ## Moving to goal position
-                if(goal_flag):
-                    return self._automatic_end_returner();
-                ## only moving around
-                else:
-                    self.mover(rel_mov)
-                    return self._automatic_step_returner()
-        ## Third action value
         elif action == 'up':
             rel_mov = [-1,0]
-            goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
-            ## Going out of the world case
-            if(top_border):
-                return self._automatic_wall_returner();
-            ## Moving internally in the world
-            else:
-                ## Moving to goal position
-                if(goal_flag):
-                    return self._automatic_end_returner();
-                ## only moving around
-                else:
-                    self.mover(rel_mov)
-                    return self._automatic_step_returner();
-        ## Forth action value
-        elif action == 'down': 
+        elif action == 'down':
             rel_mov = [1,0]
-            goal_flag = ([sum(x) for x in zip(self.agent_position, rel_mov)] == self.goal_position)
-            ## Going out of the world case
-            if(bottom_border):
+    
+        if(going_up and self.top):
+            return self._automatic_end_returner();
+        elif(going_down and self.bottom):
+            return self._automatic_end_returner();
+        elif(going_left and self.left):
+            return self._automatic_end_returner();
+        elif(going_right and self.right):
+            return self._automatic_end_returner();
+        else:
+            if(going_up and top_border):
                 return self._automatic_wall_returner();
-            ## Moving internally in the world
+            elif(going_down and bottom_border):
+                return self._automatic_wall_returner();
+            elif(going_left and left_border):
+                return self._automatic_wall_returner();
+            elif(going_right and right_border):
+                return self._automatic_wall_returner();
             else:
-                ## Moving to goal position
-                if(goal_flag):
-                    return self._automatic_end_returner();
-                ## only moving around
+                #move
+                if(self.top and top_border):
+                    symb = 2.
+                elif(self.bottom and bottom_border):
+                    symb = 2.
+                elif(self.left and left_border):
+                    symb = 2.
+                elif(self.right and right_border):
+                    symb = 2.
                 else:
-                    self.mover(rel_mov)
-                    return self._automatic_step_returner();
+                    symb = 0.
+                self.mover(rel_mov,symb)
+                return self._automatic_step_returner();
 
     def _automatic_end_returner(self):
         r = 1;
@@ -283,23 +314,23 @@ class AdvancedMaze(gym.Env):
         lst = {-1};
         return np.copy(self.world),r,end_of_eps,lst;
 
-class AdvancedMaze10x10m42(AdvancedMaze):
+class AdvancedMazeLine4x4m42(AdvancedMazeLine):
 
     def __init__(self):
-        super(AdvancedMaze10x10m42, self).__init__(rows=10,columns=10,wmode='mode42')
+        super(AdvancedMazeLine4x4m42, self).__init__(rows=4,columns=4,wmode='mode42')
 
-class AdvancedMaze10x10m0(AdvancedMaze):
-
-    def __init__(self):
-        super(AdvancedMaze10x10m0, self).__init__(rows=10,columns=10,wmode='mode0')
-
-class AdvancedMaze4x4m42(AdvancedMaze):
+class AdvancedMazeLine4x4m0(AdvancedMazeLine):
 
     def __init__(self):
-        super(AdvancedMaze4x4m42, self).__init__(rows=4,columns=4,wmode='mode42')
+        super(AdvancedMazeLine4x4m0, self).__init__(rows=4,columns=4,wmode='mode0')
 
-class AdvancedMaze4x4m0(AdvancedMaze):
+class AdvancedMazeLine10x10m42(AdvancedMazeLine):
 
     def __init__(self):
-        super(AdvancedMaze4x4m0, self).__init__(rows=4,columns=4,wmode='mode0')
+        super(AdvancedMazeLine4x4m42, self).__init__(rows=10,columns=10,wmode='mode42')
+
+class AdvancedMazeLine10x10m0(AdvancedMazeLine):
+
+    def __init__(self):
+        super(AdvancedMazeLine10x10m0, self).__init__(rows=10,columns=10,wmode='mode0')
 
