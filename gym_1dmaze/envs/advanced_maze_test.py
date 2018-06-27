@@ -230,6 +230,10 @@ class AdvancedMazeLine(gym.Env):
         right_border=False
         bottom_border=False
         top_border=False
+        going_up=None
+        going_down=None
+        going_left=None
+        going_right=None
 
         if(self.agent_position[0]==0):
             top_border=True
