@@ -131,6 +131,21 @@ class AdvancedMaze(gym.Env):
             startpos=[0,2]
             goalpos=[3,2]
 
+        if self.world_mode == 'mode29':
+            nmb = np.random.randint(low=0,high=4)
+            if(nmb == 0):
+                startpos=[2,3]
+                goalpos=[2,0]
+            elif(nmb == 1):
+                startpos=[2,0]
+                goalpos=[2,3]
+            elif(nmb == 2):
+                startpos=[3,2]
+                goalpos=[0,2]
+            else:
+                startpos=[0,2]
+                goalpos=[3,2]
+
         self.world[startpos[0],startpos[1]]=1.
         self.world[goalpos[0],goalpos[1]]=2.
 
@@ -335,4 +350,9 @@ class AdvancedMaze4x4m23(AdvancedMaze):
 
     def __init__(self):
         super(AdvancedMaze4x4m23, self).__init__(rows=4,columns=4,wmode='mode23')
+
+class AdvancedMaze4x4m29(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze4x4m29, self).__init__(rows=4,columns=4,wmode='mode29')
 
