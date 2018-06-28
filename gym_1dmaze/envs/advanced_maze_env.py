@@ -118,6 +118,19 @@ class AdvancedMaze(gym.Env):
             startpos = pos1
             goalpos = pos2
 
+        if self.world_mode == 'mode20':
+            startpos=[2,3]
+            goalpos=[2,0]
+        if self.world_mode == 'mode21':
+            startpos=[2,0]
+            goalpos=[2,3]
+        if self.world_mode == 'mode22':
+            startpos=[3,2]
+            goalpos=[0,2]
+        if self.world_mode == 'mode23':
+            startpos=[0,2]
+            goalpos=[3,2]
+
         self.world[startpos[0],startpos[1]]=1.
         self.world[goalpos[0],goalpos[1]]=2.
 
@@ -302,4 +315,24 @@ class AdvancedMaze4x4m0(AdvancedMaze):
 
     def __init__(self):
         super(AdvancedMaze4x4m0, self).__init__(rows=4,columns=4,wmode='mode0')
+
+class AdvancedMaze4x4m20(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze4x4m20, self).__init__(rows=4,columns=4,wmode='mode20')
+
+class AdvancedMaze4x4m21(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze4x4m21, self).__init__(rows=4,columns=4,wmode='mode21')
+
+class AdvancedMaze4x4m22(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze4x4m22, self).__init__(rows=4,columns=4,wmode='mode22')
+
+class AdvancedMaze4x4m23(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze4x4m23, self).__init__(rows=4,columns=4,wmode='mode23')
 

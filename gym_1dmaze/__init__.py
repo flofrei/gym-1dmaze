@@ -136,6 +136,30 @@ register(
 )
 
 register(
+    id='2DMaze_4x4_mode20-v0',
+    entry_point='gym_1dmaze.envs:AdvancedMaze4x4m20',
+    timestep_limit=100,
+)
+
+register(
+    id='2DMaze_4x4_mode21-v0',
+    entry_point='gym_1dmaze.envs:AdvancedMaze4x4m21',
+    timestep_limit=100,
+)
+
+register(
+    id='2DMaze_4x4_mode22-v0',
+    entry_point='gym_1dmaze.envs:AdvancedMaze4x4m22',
+    timestep_limit=100,
+)
+
+register(
+    id='2DMaze_4x4_mode23-v0',
+    entry_point='gym_1dmaze.envs:AdvancedMaze4x4m23',
+    timestep_limit=100,
+)
+
+register(
     id='2DMazeLine_4x4_mode42-v0',
     entry_point='gym_1dmaze.envs:AdvancedMazeLine4x4m42',
     timestep_limit=100,
