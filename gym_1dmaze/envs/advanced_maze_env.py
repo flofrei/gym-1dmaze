@@ -146,6 +146,34 @@ class AdvancedMaze(gym.Env):
                 startpos=[0,2]
                 goalpos=[3,2]
 
+        if self.world_mode == 'mode33':
+            rng = np.random.rand()
+            modal = False
+            if(rng>0.5):
+                row = np.random.randint(low=0,high=self.world_number_of_rows)
+                modal = True
+            else:
+                column = np.random.randint(low=0,high=self.world_number_of_columns)
+                
+            if(modal):
+                #same row need 2 position on the same row
+                column_ind = np.random.randint(low=0,high=self.world_number_of_columns,size=2)
+                col_ind_1 = column_ind[0]
+                col_ind_2 = column_ind[1]
+                while(col_ind_1==col_ind_2):
+                    col_ind_2 = np.random.randint(low=0,high=self.world_number_of_columns)
+                startpos = [row,col_ind_1]
+                goalpos = [row,col_ind_2]
+            else:
+                #same column need 2 positions on the same column
+                row_ind = np.random.randint(low=0,high=self.world_number_of_rows,size=2)
+                row_ind_1 = row_ind[0]
+                row_ind_2 = row_ind[1]
+                while(row_ind_1==row_ind_2):
+                    row_ind_2 = np.random.randint(low=0,high=self.world_number_of_rows)
+                startpos = [row_ind_1,column]
+                goalpos = [row_ind_2,column]
+
         self.world[startpos[0],startpos[1]]=1.
         self.world[goalpos[0],goalpos[1]]=2.
 
@@ -294,20 +322,20 @@ class AdvancedMaze(gym.Env):
                     return self._automatic_step_returner();
 
     def _automatic_end_returner(self):
-        r = 10;
+        r = 1.;
         end_of_eps = True;
         lst = {self.number_of_steps_taken_in_episode};
         return np.copy(self.world),r,end_of_eps,lst;
 
     def _automatic_step_returner(self):
-        r = -0.1;
+        r = 0;
         end_of_eps = False;
         lst = {-1};
         return np.copy(self.world),r,end_of_eps,lst;
 
     def _automatic_wall_returner(self):
-        r = -0.1;
-        end_of_eps = False;
+        r = -1.;
+        end_of_eps = True;
         lst = {-1};
         return np.copy(self.world),r,end_of_eps,lst;
 
@@ -355,4 +383,14 @@ class AdvancedMaze4x4m29(AdvancedMaze):
 
     def __init__(self):
         super(AdvancedMaze4x4m29, self).__init__(rows=4,columns=4,wmode='mode29')
+
+class AdvancedMaze4x4m33(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze4x4m33, self).__init__(rows=4,columns=4,wmode='mode33')
+
+class AdvancedMaze10x10m33(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze10x10m33, self).__init__(rows=10,columns=10,wmode='mode33')
 
