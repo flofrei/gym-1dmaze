@@ -135,8 +135,8 @@ class AdvancedMazeLine(gym.Env):
         if self.world_mode == 'mode42':
             goal=-1
             goal_ind = np.random.randint(low=0,high=4)
-            pos1 = np.random.randint(low=1,high=self.world_number_of_rows-1)          
-            pos2 = np.random.randint(low=1,high=self.world_number_of_columns-1)
+            pos1 = np.random.randint(low=0,high=self.world_number_of_rows)          
+            pos2 = np.random.randint(low=0,high=self.world_number_of_columns)
             agent_pos = [pos1,pos2]
             if(goal_ind==0):
                 self.goal_row = -1
