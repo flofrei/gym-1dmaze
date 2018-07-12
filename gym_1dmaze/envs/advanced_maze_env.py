@@ -344,6 +344,31 @@ class AdvancedMaze10x10m42(AdvancedMaze):
     def __init__(self):
         super(AdvancedMaze10x10m42, self).__init__(rows=10,columns=10,wmode='mode42')
 
+class AdvancedMaze9x9m42(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze9x9m42, self).__init__(rows=9,columns=9,wmode='mode42')
+
+class AdvancedMaze8x8m42(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze8x8m42, self).__init__(rows=8,columns=8,wmode='mode42')
+
+class AdvancedMaze7x7m42(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze7x7m42, self).__init__(rows=7,columns=7,wmode='mode42')
+
+class AdvancedMaze6x6m42(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze6x6m42, self).__init__(rows=6,columns=6,wmode='mode42')
+
+class AdvancedMaze5x5m42(AdvancedMaze):
+
+    def __init__(self):
+        super(AdvancedMaze5x5m42, self).__init__(rows=5,columns=5,wmode='mode42')
+
 class AdvancedMaze10x10m0(AdvancedMaze):
 
     def __init__(self):

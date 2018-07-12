@@ -118,6 +118,36 @@ register(
 )
 
 register(
+    id='2DMaze_9x9_mode42-v0',
+    entry_point='gym_1dmaze.envs:AdvancedMaze9x9m42',
+    timestep_limit=100,
+)
+
+register(
+    id='2DMaze_8x8_mode42-v0',
+    entry_point='gym_1dmaze.envs:AdvancedMaze8x8m42',
+    timestep_limit=100,
+)
+
+register(
+    id='2DMaze_7x7_mode42-v0',
+    entry_point='gym_1dmaze.envs:AdvancedMaze7x7m42',
+    timestep_limit=100,
+)
+
+register(
+    id='2DMaze_6x6_mode42-v0',
+    entry_point='gym_1dmaze.envs:AdvancedMaze6x6m42',
+    timestep_limit=100,
+)
+
+register(
+    id='2DMaze_5x5_mode42-v0',
+    entry_point='gym_1dmaze.envs:AdvancedMaze5x5m42',
+    timestep_limit=100,
+)
+
+register(
     id='2DMaze_10x10_mode0-v0',
     entry_point='gym_1dmaze.envs:AdvancedMaze10x10m0',
     timestep_limit=100,
