@@ -281,7 +281,7 @@ class AdvancedMazeKey(gym.Env):
                     return self._automatic_end_returner();
                 elif(key_flag):
                     self.key_picked_up = True
-                    self.world[keypos[0],keypos[1]]=0.
+                    self.world[self.key_position[0],self.key_position[1]]=0.
                     self.mover(rel_mov)
                     return self._automatic_key_returner();
                 ## only moving around
@@ -303,7 +303,7 @@ class AdvancedMazeKey(gym.Env):
                     return self._automatic_end_returner();
                 elif(key_flag):
                     self.key_picked_up = True
-                    self.world[keypos[0],keypos[1]]=0.
+                    self.world[self.key_position[0],self.key_position[1]]=0.
                     self.mover(rel_mov)
                     return self._automatic_key_returner();
                 ## only moving around
@@ -325,7 +325,7 @@ class AdvancedMazeKey(gym.Env):
                     return self._automatic_end_returner();
                 elif(key_flag):
                     self.key_picked_up = True
-                    self.world[keypos[0],keypos[1]]=0.
+                    self.world[self.key_position[0],self.key_position[1]]=0.
                     self.mover(rel_mov)
                     return self._automatic_key_returner();
                 ## only moving around
@@ -347,7 +347,7 @@ class AdvancedMazeKey(gym.Env):
                     return self._automatic_end_returner();
                 elif(key_flag):
                     self.key_picked_up = True
-                    self.world[keypos[0],keypos[1]]=0.
+                    self.world[self.key_position[0],self.key_position[1]]=0.
                     self.mover(rel_mov)
                     return self._automatic_key_returner();
                 ## only moving around
