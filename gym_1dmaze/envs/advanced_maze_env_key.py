@@ -103,6 +103,8 @@ class AdvancedMazeKey(gym.Env):
         self.world[old_position[0],old_position[1]] = 0.
         self.world[new_position[0],new_position[1]] = 1.
         self.agent_position = new_position
+        if(not self.key_picked_up):
+            self.world[self.goal_position[0],self.goal_position[1]]=2.
 
     def _reset(self):
         self.empty_world()
