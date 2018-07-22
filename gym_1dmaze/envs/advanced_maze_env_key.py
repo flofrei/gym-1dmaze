@@ -44,6 +44,7 @@ class AdvancedMazeKey(gym.Env):
 
         self.agent_position=[-1,-1];
         self.goal_position=[-1,-1];
+        self.key_position=[-1,-1];
         print("Created instance!")
 
         self.observation_space = spaces.Box(low=0,high=2,shape=(self.world_number_of_rows,self.world_number_of_columns),dtype=np.int8)
