@@ -121,7 +121,7 @@ class AdvancedMazeKey(gym.Env):
                 pos3 = [new_row_inds[2],new_column_inds[2]]
             startpos = pos1
             goalpos = pos2
-            while(pos3==pos1 or pos3==pos2 )
+            while(pos3==pos1 or pos3==pos2):
                 pos3 = [np.random.randint(low=0,high=self.world_number_of_rows),np.random.randint(low=0,high=self.world_number_of_columns)]
             keypos = pos3
 
