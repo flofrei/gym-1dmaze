@@ -377,7 +377,7 @@ class AdvancedMazeKey(gym.Env):
         end_of_eps = False;
         #end_of_eps = True;
         lst = {-1};
-        lst = {self.number_of_steps_taken_in_episode};
+        #lst = {self.number_of_steps_taken_in_episode};
         return np.copy(self.world),r,end_of_eps,lst;
 
     def _automatic_wall_returner(self):
