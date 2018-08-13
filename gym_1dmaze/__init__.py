@@ -234,41 +234,41 @@ register(
 register(
     id='2DMazeKey_10x10_mode42-v0',
     entry_point='gym_1dmaze.envs:AdvancedMazeKey10x10m42',
-    timestep_limit=100,
+    timestep_limit=1000,
 )
 
 register(
     id='2DMazeKey_9x9_mode42-v0',
     entry_point='gym_1dmaze.envs:AdvancedMazeKey9x9m42',
-    timestep_limit=100,
+    timestep_limit=1000,
 )
 
 register(
     id='2DMazeKey_8x8_mode42-v0',
     entry_point='gym_1dmaze.envs:AdvancedMazeKey8x8m42',
-    timestep_limit=100,
+    timestep_limit=1000,
 )
 
 register(
     id='2DMazeKey_7x7_mode42-v0',
     entry_point='gym_1dmaze.envs:AdvancedMazeKey7x7m42',
-    timestep_limit=100,
+    timestep_limit=1000,
 )
 
 register(
     id='2DMazeKey_6x6_mode42-v0',
     entry_point='gym_1dmaze.envs:AdvancedMazeKey6x6m42',
-    timestep_limit=100,
+    timestep_limit=1000,
 )
 
 register(
     id='2DMazeKey_5x5_mode42-v0',
     entry_point='gym_1dmaze.envs:AdvancedMazeKey5x5m42',
-    timestep_limit=100,
+    timestep_limit=1000,
 )
 
 register(
     id='2DMazeKey_4x4_mode42-v0',
     entry_point='gym_1dmaze.envs:AdvancedMazeKey4x4m42',
-    timestep_limit=100,
+    timestep_limit=1000,
 )
