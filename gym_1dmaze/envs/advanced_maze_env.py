@@ -334,8 +334,8 @@ class AdvancedMaze(gym.Env):
         return np.copy(self.world),r,end_of_eps,lst;
 
     def _automatic_wall_returner(self):
-        r = -1.;
-        end_of_eps = True;
+        r = 0.;
+        end_of_eps = False;
         lst = {-1};
         return np.copy(self.world),r,end_of_eps,lst;
 
