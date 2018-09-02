@@ -367,8 +367,8 @@ class AdvancedMazeKey(gym.Env):
         return np.copy(self.world),r,end_of_eps,lst;
 
     def _automatic_step_returner(self):
-        #r = 0;
-        r = -0.1;
+        r = 0;
+        #r = -0.1;
         end_of_eps = False;
         lst = {-1,self.key_picked_up};
         return np.copy(self.world),r,end_of_eps,lst;
@@ -383,8 +383,8 @@ class AdvancedMazeKey(gym.Env):
         return np.copy(self.world),r,end_of_eps,lst;
 
     def _automatic_wall_returner(self):
-        #r = 0.;
-        r = -0.1;
+        r = 0.;
+        #r = -0.1;
         end_of_eps = False;
         lst = {-1,self.key_picked_up};
         return np.copy(self.world),r,end_of_eps,lst;
